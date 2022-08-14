@@ -1,14 +1,17 @@
 package com.example.keepintouch;
 
-import android.os.Build;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,34 +20,65 @@ public class MainActivity extends AppCompatActivity {
      * the Cursor to the ListView.
      */
     private final static String[] FROM_COLUMNS = {
-            Build.VERSION.SDK_INT
-                    >= Build.VERSION_CODES.HONEYCOMB ?
-                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY :
-                    ContactsContract.Contacts.DISPLAY_NAME,
-            ContactsContract.Contacts.HAS_PHONE_NUMBER,
+            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
             ContactsContract.CommonDataKinds.Phone.NUMBER,
             ContactsContract.CommonDataKinds.Photo.PHOTO_URI
     };
     private final static int[] TO_IDS = {
-            android.R.id.text1
+            R.id.tv_name,
+            R.id.tv_number,
+           // R.id.iv_image
     };
     ListView contactsList;
-
     private SimpleCursorAdapter cursorAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.contacts_list_view);
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
+        {
+           // while (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
+           ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, 1);
+       }
+        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         contactsList = (ListView) findViewById(R.id.listView);
-        cursorAdapter = new SimpleCursorAdapter(this,R.layout.contacts_list_item,null,FROM_COLUMNS,TO_IDS,0){
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                return super.getView(position, convertView, parent);
-            }
-
-        };
+        String sort =  ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME+"ASC";
+        Cursor cursor = getContentResolver().query(uri,null,null,null,null);
+        cursorAdapter =
+                new SimpleCursorAdapter(
+                        this,
+                        R.layout.contacts_list_item,
+                        cursor,
+                        FROM_COLUMNS,
+                        TO_IDS,
+               0);
+//
+//            /*{
+//            @Override
+////            public View getView(int position, View convertView, ViewGroup parent) {
+////                //set the item
+////
+////                if(convertView == null)
+////                    convertView = View.inflate(MainActivity.this,R.layout.contacts_list_item,null);
+////                //get the component
+////                TextView nameView = (TextView) convertView.findViewById(R.id.tv_name);
+////                ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_image);
+////                TextView phoneView = (TextView) convertView.findViewById(R.id.tv_number);
+////                //set contacts
+////                //TODO: understand how to sent item from cursorAdapter
+////                MyContact contact = new MyContact((ContactsContract.Contacts) cursorAdapter.getItem(position));
+////                // set the component
+////                nameView.setText(contact.getName());
+////                imageView.setImageURI(Uri.parse(contact.getPhotoSrc()));
+////                phoneView.setText(contact.getNumber());
+////
+////                return convertView;
+////            }*/
+//        };
+////
         contactsList.setAdapter(cursorAdapter);
-
 
     }
 

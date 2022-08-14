@@ -1,9 +1,9 @@
 package com.example.keepintouch.android;
 
-import com.example.keepintouch.types.Contact;
+import com.example.keepintouch.types.MyContact;
 
 import java.util.List;
 
 public interface ContactsRetriever {
-    List<Contact> getContacts();
+    List<MyContact> getContacts();
 }
