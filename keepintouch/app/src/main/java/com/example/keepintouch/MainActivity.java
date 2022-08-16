@@ -27,34 +27,39 @@ public class MainActivity extends AppCompatActivity {
     private final static int[] TO_IDS = {
             R.id.tv_name,
             R.id.tv_number,
-           // R.id.iv_image
-    };
-    ListView contactsList;
-    private SimpleCursorAdapter cursorAdapter;
+            R.id.iv_image
+        };
+        ListView contactsList;
+        private SimpleCursorAdapter cursorAdapter;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.contacts_list_view);
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
-        {
-           // while (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
-           ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, 1);
-       }
-        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-        contactsList = (ListView) findViewById(R.id.listView);
-        String sort =  ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME+"ASC";
-        Cursor cursor = getContentResolver().query(uri,null,null,null,null);
-        cursorAdapter =
-                new SimpleCursorAdapter(
-                        this,
-                        R.layout.contacts_list_item,
-                        cursor,
-                        FROM_COLUMNS,
-                        TO_IDS,
-               0);
-//
+            setContentView(R.layout.contacts_list_view);
+            // check permissions
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
+            {
+               // while (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
+               ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, 1);
+               // TODO: make sure the user grants the required permission
+            }
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
+            Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+            contactsList = (ListView) findViewById(R.id.listView);
+            String sort =  ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + "ASC";
+            Cursor cursor = getContentResolver().query(uri,null, null,null,sort);
+            cursorAdapter =
+                    new SimpleCursorAdapter(
+                            this,
+                            R.layout.contacts_list_item,
+                            cursor,
+                            FROM_COLUMNS,
+                            TO_IDS,
+                   0);
+    //
 //            /*{
 //            @Override
 ////            public View getView(int position, View convertView, ViewGroup parent) {
@@ -67,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 ////                ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_image);
 ////                TextView phoneView = (TextView) convertView.findViewById(R.id.tv_number);
 ////                //set contacts
-////                //TODO: understand how to sent item from cursorAdapter
+////                //TODO: understand how to send item from cursorAdapter
 ////                MyContact contact = new MyContact((ContactsContract.Contacts) cursorAdapter.getItem(position));
 ////                // set the component
 ////                nameView.setText(contact.getName());
@@ -78,7 +83,11 @@ public class MainActivity extends AppCompatActivity {
 ////            }*/
 //        };
 ////
-        contactsList.setAdapter(cursorAdapter);
+            contactsList.setAdapter(cursorAdapter);// TODO add update to the contact cursor evry loaded/flash.
+
+           // CursorJoiner joiner =  new CursorJoiner(cursor,ContactsContract.CommonDataKinds.Id)
+
+
 
     }
 
