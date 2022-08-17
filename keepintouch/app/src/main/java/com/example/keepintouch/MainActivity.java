@@ -59,32 +59,8 @@ public class MainActivity extends AppCompatActivity {
                             FROM_COLUMNS,
                             TO_IDS,
                    0);
-    //
-//            /*{
-//            @Override
-////            public View getView(int position, View convertView, ViewGroup parent) {
-////                //set the item
-////
-////                if(convertView == null)
-////                    convertView = View.inflate(MainActivity.this,R.layout.contacts_list_item,null);
-////                //get the component
-////                TextView nameView = (TextView) convertView.findViewById(R.id.tv_name);
-////                ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_image);
-////                TextView phoneView = (TextView) convertView.findViewById(R.id.tv_number);
-////                //set contacts
-////                //TODO: understand how to send item from cursorAdapter
-////                MyContact contact = new MyContact((ContactsContract.Contacts) cursorAdapter.getItem(position));
-////                // set the component
-////                nameView.setText(contact.getName());
-////                imageView.setImageURI(Uri.parse(contact.getPhotoSrc()));
-////                phoneView.setText(contact.getNumber());
-////
-////                return convertView;
-////            }*/
-//        };
-////
             contactsList.setAdapter(cursorAdapter);// TODO add update to the contact cursor evry loaded/flash.
-
+            cursor.close();
            // CursorJoiner joiner =  new CursorJoiner(cursor,ContactsContract.CommonDataKinds.Id)
 
 
