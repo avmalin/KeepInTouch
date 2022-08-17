@@ -9,6 +9,10 @@ public class MyContact {
     private final String mNumber;
     private final String mPhotoSrc;
     private final Date mBirthday;
+    private  long mLastCall;
+
+
+    public Date lastUpdate;
 
     public MyContact()
     {
@@ -23,12 +27,20 @@ public class MyContact {
         mBirthday = birthday;
         mPhotoSrc = photoSrc;
     }
-//TODO: update ctor ContactsContract.contacts
+//TODO: update constructor ContactsContract.contacts
     public MyContact(ContactsContract.Contacts contacts) {
         mName=null;
         mNumber=null;
         mBirthday = null;
         mPhotoSrc = null;
+    }
+
+    public Date getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
     }
 
     public String getName() {
@@ -44,5 +56,14 @@ public class MyContact {
     }
     public String getPhotoSrc() {
         return mPhotoSrc;
+    }
+
+    public long getLastCall() {
+        return mLastCall;
+    }
+
+    public void setLastCall(long lastCall) {
+        mLastCall = lastCall;
+
     }
 }
