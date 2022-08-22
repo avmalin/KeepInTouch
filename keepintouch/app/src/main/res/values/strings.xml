@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">KeepInTouch</string>
+    <string name="app_header">KeepInTouch app</string>
 </resources>
