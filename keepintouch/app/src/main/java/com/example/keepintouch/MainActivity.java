@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 //TODO view to edit contacts priority
                 //TODO update the table after every flash
                 //showContactActivity();
+                myContactTable.updateAllTable(this);
                 showMyContactActivity();
             }
     }

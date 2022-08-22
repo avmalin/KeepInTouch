@@ -5,13 +5,34 @@ import android.provider.ContactsContract;
 import java.util.Date;
 
 public class MyContact {
-    private final String mName;
-    private final String mNumber;
-    private final String mPhotoSrc;
-    private final Date mBirthday;
-    private  PriorityType mPriorityType;
-    private  int mContactId;
-    private  long mLastCall;
+    private String mName;
+    private String mNumber;
+    private String mPhotoSrc;
+    private Date mBirthday;
+    private PriorityType mPriorityType;
+    private int mContactId;
+
+    public void setName(String name) {
+        mName = name;
+    }
+
+    public void setNumber(String number) {
+        mNumber = number;
+    }
+
+    public void setPhotoSrc(String photoSrc) {
+        mPhotoSrc = photoSrc;
+    }
+
+    public void setBirthday(Date birthday) {
+        mBirthday = birthday;
+    }
+
+    public void setPriorityType(PriorityType priorityType) {
+        mPriorityType = priorityType;
+    }
+
+    private long mLastCall;
 
 
     public Date lastUpdate;
