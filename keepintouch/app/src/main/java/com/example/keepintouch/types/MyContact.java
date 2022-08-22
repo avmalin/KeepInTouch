@@ -9,6 +9,8 @@ public class MyContact {
     private final String mNumber;
     private final String mPhotoSrc;
     private final Date mBirthday;
+    private  PriorityType mPriorityType;
+    private  int mContactId;
     private  long mLastCall;
 
 
@@ -20,6 +22,17 @@ public class MyContact {
         mNumber=null;
         mBirthday = null;
         mPhotoSrc = null;
+        mPriorityType = PriorityType.NEVER;
+
+    }
+    public MyContact(int id,  PriorityType priorityType, long lastCall, String number,String photoSrc,String name){
+        mContactId = id;
+        mLastCall = lastCall;
+        mPriorityType = priorityType;
+        mName=name;
+        mNumber=number;
+        mBirthday = null;
+        mPhotoSrc = photoSrc;
     }
     public MyContact(String name, String number, Date birthday, String photoSrc) {
         mName = name;
@@ -65,5 +78,17 @@ public class MyContact {
     public void setLastCall(long lastCall) {
         mLastCall = lastCall;
 
+    }
+
+    public int getContactId() {
+        return mContactId;
+    }
+
+    public PriorityType getPriorityType() {
+        return mPriorityType;
+    }
+
+    public void setContactId(int contactId) {
+        mContactId = contactId;
     }
 }
