@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -17,6 +18,7 @@ import java.util.Map;
 
 public class MyContactTable extends SQLiteOpenHelper {
     //database data
+
     private static final String DB_NAME = "my_contacts_db.db";
     private static final int DB_VERSION = 1;
     public static final String DETAILS_TABLE_NAME = "details_table";
@@ -83,7 +85,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                 + LAST_CALL_COL +  " INTEGER, "
                 + PRIORITY_TYPE_COL + " INTEGER)";
         db.execSQL(query);
-
+        Log.i(null,"DataBase has been created.");
     }
     public ArrayList<MyContact> getContactList()
     {
@@ -308,4 +310,24 @@ public class MyContactTable extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public void updateTableFromMap(Map<Integer, MyContact> contactMap) {
+        SQLiteDatabase db;
+        try{
+            db = getWritableDatabase();
+            for (MyContact c: contactMap.values()) {
+                if(c.getPriorityType() == PriorityType.NEVER)
+                {
+                    db.delete(CONTACTS_TABLE_NAME,ID_COL + " = " + c.getContactId(),null);
+                }
+                else {
+                    ContentValues cv = contactToVc(c);
+                    db.update(CONTACTS_TABLE_NAME, cv, ID_COL + " = " + c.getContactId(),null);
+                }
+            }
+            db.close();
+        }
+        catch (Exception e){
+            Log.e(null,e.toString());
+        }
+    }
 }

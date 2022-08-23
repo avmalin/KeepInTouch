@@ -61,6 +61,11 @@ public class MyContact {
         mBirthday = birthday;
         mPhotoSrc = photoSrc;
     }
+    public MyContact(int id, PriorityType type)
+    {
+        mContactId = id;
+        mPriorityType = type;
+    }
 //TODO: update constructor ContactsContract.contacts
     public MyContact(ContactsContract.Contacts contacts) {
         mName=null;

@@ -10,17 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="80dp">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingActionButton"
-            android:layout_width="45dp"
-            android:layout_height="46dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
-            android:clickable="true"
-            android:onClick="editPriorityType"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@android:drawable/ic_input_add" />
+
 
         <TextView
             android:id="@+id/tv_header"
@@ -31,7 +21,6 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/floatingActionButton"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
     <ListView

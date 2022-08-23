@@ -1,9 +1,9 @@
 package com.example.keepintouch;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -27,6 +27,7 @@ import com.example.keepintouch.types.MyContactTable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,13 +35,13 @@ public class MainActivity extends AppCompatActivity {
      * Defines an array that contains column names to move from
      * the Cursor to the ListView.
      */
-    private final static String[] FROM_COLUMNS = {
+    public final static String[] FROM_COLUMNS = {
             ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
             ContactsContract.CommonDataKinds.Phone.NUMBER,
             ContactsContract.CommonDataKinds.Photo.PHOTO_URI,
             ContactsContract.CommonDataKinds.Phone.CONTACT_ID
     };
-    private final static int[] TO_IDS = {
+    public final static int[] TO_IDS = {
             R.id.tv_name,
             R.id.tv_number,
             R.id.iv_image
@@ -49,13 +50,14 @@ public class MainActivity extends AppCompatActivity {
         private SimpleCursorAdapter cursorAdapter;
         private ArrayAdapter<MyContact> adapter = null;
         private MyContactTable myContactTable;
+        private Map<Integer,MyContact> contactMap;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            myContactTable = new MyContactTable(this);
+            //myContactTable = new MyContactTable(this);
             setContentView(R.layout.contacts_list_view);
-
+            myContactTable = new MyContactTable(this);
             // check permissions
             if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, 1);
@@ -70,18 +72,20 @@ public class MainActivity extends AppCompatActivity {
             {
                 //TODO close the program
             }
-            else {
+//            else {
+//
+//                //TODO view to edit contacts priority
+//                //TODO update the table after every flash
+//                //showContactActivity();
+//                //myContactTable.updateAllTable(this);
+//                //showMyContactActivity();
+//            }
 
-                //TODO view to edit contacts priority
-                //TODO update the table after every flash
-                //showContactActivity();
-                myContactTable.updateAllTable(this);
-                showMyContactActivity();
-            }
+
     }
 
     private void showMyContactActivity() {
-            SQLiteDatabase db = myContactTable.getReadableDatabase();
+
             Cursor myContactCursor = null;
             Cursor contactCursor = null;
             contactsList = (ListView) findViewById(R.id.listView);
@@ -142,6 +146,12 @@ public class MainActivity extends AppCompatActivity {
                         0);
         contactsList.setAdapter(cursorAdapter);// TODO add update to the contact cursor every loaded/flash.
         cursor.close();
+    }
+
+
+    public void openPrioritySet(View view) {
+        Intent myIntent = new Intent(MainActivity.this, PrioritySetActivity.class);
+        startActivity(myIntent);
     }
 
 
