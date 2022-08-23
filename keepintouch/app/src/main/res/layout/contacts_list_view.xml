@@ -11,17 +11,27 @@
         android:layout_height="80dp">
 
 
-
         <TextView
             android:id="@+id/tv_header"
-            android:layout_width="351dp"
+            android:layout_width="0dp"
             android:layout_height="59dp"
             android:layout_marginTop="4dp"
             android:text="@string/app_header"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_settings_24"
+            android:contentDescription="@string/set_priority"
+            android:onClick="openPrioritySet"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
     <ListView
         android:id="@+id/listView"
