@@ -18,7 +18,7 @@ public class RbFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.contact_priority,container,false);
         Bundle data = getArguments();
-        id = data.getInt("id");
+        //id = data.getInt("id");
 
 
         return view;

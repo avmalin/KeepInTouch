@@ -1,14 +1,22 @@
 package com.example.keepintouch;
 
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CursorAdapter;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
 import com.example.keepintouch.types.PriorityType;
+import com.example.keepintouch.types.RbFragment;
 
 import java.util.Map;
 
@@ -22,7 +30,7 @@ public class PrioritySetActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_priority_set);
-        /*myContactTable = new MyContactTable(this);//TODO check if works
+        myContactTable = new MyContactTable(this);//TODO check if works
 
 
 
@@ -70,7 +78,7 @@ public class PrioritySetActivity extends AppCompatActivity {
         catch (Exception e)
         {
             System.out.println(e);
-        }*/
+        }
     }
 
     public void onRBClicked(View view) {
