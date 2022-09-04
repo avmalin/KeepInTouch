@@ -131,6 +131,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+       // showMyContactActivity();
+    }
+
     private void showContactActivity() {
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         contactsList = (ListView) findViewById(R.id.listView);

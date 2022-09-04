@@ -8,22 +8,24 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
+import com.example.keepintouch.types.PassDataInterface;
 import com.example.keepintouch.types.PriorityType;
-import com.example.keepintouch.types.RbFragment;
 
 import java.util.Map;
 
-public class PrioritySetActivity extends AppCompatActivity {
+public class PrioritySetActivity extends AppCompatActivity implements PassDataInterface {
 
     CursorAdapter cursorAdapter = null;
     MyContactTable myContactTable;
+    View contactPriority;
     Map<Integer, MyContact> contactMap;
     int cId;
     @Override
@@ -31,31 +33,66 @@ public class PrioritySetActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_priority_set);
         myContactTable = new MyContactTable(this);//TODO check if works
-
-
-
-
         ListView listView = findViewById(R.id.listViewPriority);
+        RadioGroup radioGroup = findViewById(R.id.rg_priority);
+        contactPriority=null;
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (cursorAdapter != null) {
-                    RbFragment fragment = new RbFragment();
-                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    Bundle data = new Bundle();
-
-                    Cursor c = (Cursor) cursorAdapter.getItem(position);
-                    cId = c.getInt(3);
-                    String cName = c.getString(1);
-
-                    data.putInt("id",cId);
-                    data.putString("name",cName);
-
-                    fragment.setArguments(data);
-                    fragmentTransaction.replace(R.id.contactFragment,fragment).commit();
-
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (contactPriority != null) {
+                    contactPriority.setVisibility(View.GONE);
                 }
+                contactPriority = view.findViewById(R.id.contactPriority);
+                contactPriority.setVisibility(View.VISIBLE);
+                /* by fragment  -- not use
+                // RbFragment fragment = new RbFragment(PrioritySetActivity.this);
+                //FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                //Bundle data = new Bundle();
+
+                //Cursor c = (Cursor) cursorAdapter.getItem(position);
+                //cId = c.getInt(3);
+                //String cName = c.getString(1);
+
+                //data.putInt("id",cId);
+                //data.putString("name",cName);
+
+                //fragment.setArguments(data);
+                //fragmentTransaction.replace(R.id.contactFragment,fragment).commit();
+                 */
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                contactPriority.setVisibility(View.GONE);
+                contactPriority = null;
+            }
+
+        });
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                int rbId = group.getCheckedRadioButtonId();
+                View parent = (View)group.getParent();
+                int cId = Integer.parseInt(((TextView)parent.findViewById(R.id.tv_contact_id)).getText().toString());
+                PriorityType type;
+
+                switch (rbId){
+                    case R.id.rb_week:
+                    type = PriorityType.WEEKLY;
+                    break;
+                    case R.id.rb_month:
+                        type = PriorityType.MONTHLY;
+                        break;
+                    case R.id.rb_half_year:
+                        type = PriorityType.HALF_YEAR;
+                        break;
+                    case R.id.rb_year:
+                        type = PriorityType.YEARLY;
+                        break;
+                    default:
+                        type = PriorityType.NEVER;
+                }
+                contactMap.put(cId, new MyContact(cId,type));
             }
         });
 
@@ -81,27 +118,15 @@ public class PrioritySetActivity extends AppCompatActivity {
         }
     }
 
-    public void onRBClicked(View view) {
-        PriorityType type;
-        switch (view.getId()) {
-            case R.id.rb_week:
-                type = PriorityType.WEEKLY;
-            case R.id.rb_month:
-                type = PriorityType.MONTHLY;
-            case R.id.rb_half_year:
-                type = PriorityType.HALF_YEAR;
-            case R.id.rb_year:
-                type = PriorityType.YEARLY;
-            default:
-                type = PriorityType.NEVER;
-        }
-        contactMap.put(cId,new MyContact(cId, type));
-    }
 
     @Override
     protected void onPause() {
         myContactTable.updateTableFromMap(contactMap);
-
         super.onPause();
+    }
+
+    @Override
+    public void onDataReceived(MyContact myContact) {
+        contactMap.put(myContact.getContactId(),myContact);
     }
 }
