@@ -10,14 +10,12 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
 import com.example.keepintouch.types.PassDataInterface;
-import com.example.keepintouch.types.PriorityType;
 
 import java.util.Map;
 
@@ -66,35 +64,17 @@ public class PrioritySetActivity extends AppCompatActivity implements PassDataIn
                 contactPriority.setVisibility(View.GONE);
                 contactPriority = null;
             }
-
         });
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                int rbId = group.getCheckedRadioButtonId();
-                View parent = (View)group.getParent();
-                int cId = Integer.parseInt(((TextView)parent.findViewById(R.id.tv_contact_id)).getText().toString());
-                PriorityType type;
-
-                switch (rbId){
-                    case R.id.rb_week:
-                    type = PriorityType.WEEKLY;
-                    break;
-                    case R.id.rb_month:
-                        type = PriorityType.MONTHLY;
-                        break;
-                    case R.id.rb_half_year:
-                        type = PriorityType.HALF_YEAR;
-                        break;
-                    case R.id.rb_year:
-                        type = PriorityType.YEARLY;
-                        break;
-                    default:
-                        type = PriorityType.NEVER;
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                RadioGroup rg = view.findViewById(R.id.rg_priority);
+                if (rg != null) {
+                    int answer = rg.getCheckedRadioButtonId();
                 }
-                contactMap.put(cId, new MyContact(cId,type));
             }
         });
+
 
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         Cursor cursor = null;
@@ -116,6 +96,35 @@ public class PrioritySetActivity extends AppCompatActivity implements PassDataIn
         {
             System.out.println(e);
         }
+
+        /*
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                int rbId = group.getCheckedRadioButtonId();
+                View parent = (View)group.getParent();
+                int cId = Integer.parseInt(((TextView)parent.findViewById(R.id.tv_contact_id)).getText().toString());
+                PriorityType type;
+
+                switch (rbId){
+                    case R.id.rb_week:
+                        type = PriorityType.WEEKLY;
+                        break;
+                    case R.id.rb_month:
+                        type = PriorityType.MONTHLY;
+                        break;
+                    case R.id.rb_half_year:
+                        type = PriorityType.HALF_YEAR;
+                        break;
+                    case R.id.rb_year:
+                        type = PriorityType.YEARLY;
+                        break;
+                    default:
+                        type = PriorityType.NEVER;
+                }
+                contactMap.put(cId, new MyContact(cId,type));
+            }
+        });*/
     }
 
 
