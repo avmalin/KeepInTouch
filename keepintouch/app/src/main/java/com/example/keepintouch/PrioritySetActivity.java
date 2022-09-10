@@ -5,26 +5,28 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
-import com.example.keepintouch.types.PassDataInterface;
+import com.example.keepintouch.types.PriorityType;
 
-import java.util.Map;
+import java.util.HashMap;
 
-public class PrioritySetActivity extends AppCompatActivity implements PassDataInterface {
+public class PrioritySetActivity extends AppCompatActivity {
 
     CursorAdapter cursorAdapter = null;
     MyContactTable myContactTable;
     View contactPriority;
-    Map<Integer, MyContact> contactMap;
+    HashMap<Integer, MyContact> contactMap;
     int cId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,7 @@ public class PrioritySetActivity extends AppCompatActivity implements PassDataIn
         ListView listView = findViewById(R.id.listViewPriority);
         RadioGroup radioGroup = findViewById(R.id.rg_priority);
         contactPriority=null;
+        contactMap = new HashMap<>();
 
         listView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -68,14 +71,13 @@ public class PrioritySetActivity extends AppCompatActivity implements PassDataIn
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                RadioGroup rg = view.findViewById(R.id.rg_priority);
-                if (rg != null) {
-                    int answer = rg.getCheckedRadioButtonId();
+                if (contactPriority != null) {
+                    contactPriority.setVisibility(View.GONE);
                 }
+                contactPriority = view.findViewById(R.id.contactPriority);
+                contactPriority.setVisibility(View.VISIBLE);
             }
         });
-
-
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         Cursor cursor = null;
         String sort =  ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC";
@@ -88,7 +90,43 @@ public class PrioritySetActivity extends AppCompatActivity implements PassDataIn
                             cursor,
                             MainActivity.FROM_COLUMNS,
                             MainActivity.TO_IDS,
-                            0);
+                            0){
+                        @Override
+                        public View getView(int position, View convertView, ViewGroup parent) {
+                            View v = super.getView(position, convertView, parent);
+                            RadioGroup rg = v.findViewById(R.id.rg_priority);
+                            rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                                @Override
+                                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                                    int rbId = group.getCheckedRadioButtonId();
+                                    View parent = (View)group.getParent().getParent();
+                                    TextView textView = (TextView)parent.findViewById(R.id.tv_contact_id);
+                                    int cId = Integer.parseInt(textView.getText().toString());
+                                    PriorityType type;
+
+                                    switch (rbId){
+                                        case R.id.rb_week:
+                                            type = PriorityType.WEEKLY;
+                                            break;
+                                        case R.id.rb_month:
+                                            type = PriorityType.MONTHLY;
+                                            break;
+                                        case R.id.rb_half_year:
+                                            type = PriorityType.HALF_YEAR;
+                                            break;
+                                        case R.id.rb_year:
+                                            type = PriorityType.YEARLY;
+                                            break;
+                                        default:
+                                            type = PriorityType.NEVER;
+                                    }
+                                    contactMap.put(cId, new MyContact(cId,type));
+
+                                }
+                            });
+                            return v;
+                        }
+                    };
             listView.setAdapter(cursorAdapter);// TODO add update to the contact cursor every loaded/flash.
 
         }
@@ -134,8 +172,5 @@ public class PrioritySetActivity extends AppCompatActivity implements PassDataIn
         super.onPause();
     }
 
-    @Override
-    public void onDataReceived(MyContact myContact) {
-        contactMap.put(myContact.getContactId(),myContact);
-    }
+
 }

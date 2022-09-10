@@ -117,8 +117,12 @@ public class MyContactTable extends SQLiteOpenHelper {
             }
         }
         finally {
-            db.close();
-            cursor.close();
+            if (db != null) {
+                db.close();
+            }
+            if (cursor!=null) {
+                cursor.close();
+            }
         }
         return list;
     }

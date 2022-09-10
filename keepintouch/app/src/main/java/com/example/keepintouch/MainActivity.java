@@ -3,7 +3,6 @@ package com.example.keepintouch;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -44,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
     public final static int[] TO_IDS = {
             R.id.tv_name,
             R.id.tv_number,
-            R.id.iv_image
+            R.id.iv_image,
+            R.id.tv_contact_id
         };
         ListView contactsList;
         private SimpleCursorAdapter cursorAdapter;
@@ -86,8 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showMyContactActivity() {
 
-            Cursor myContactCursor = null;
-            Cursor contactCursor = null;
+
             contactsList = (ListView) findViewById(R.id.listView);
             ArrayList<MyContact> listContact;
            // Map<Integer,MyContact> contactMap = null;
@@ -119,10 +118,12 @@ public class MainActivity extends AppCompatActivity {
                     TextView tvName = (TextView) convertView.findViewById(R.id.tv_name);
                     TextView tvNumber = (TextView) convertView.findViewById(R.id.tv_number);
                     ImageView ivView = (ImageView) convertView.findViewById(R.id.iv_image);
+                    TextView tvId = (TextView) convertView.findViewById(R.id.tv_contact_id);
 
                     tvName.setText(contact.getName());
                     tvNumber.setText(contact.getNumber());
                     ivView.setImageURI(Uri.parse(contact.getPhotoSrc()));
+                    tvId.setText(contact.getContactId());
                     return convertView;
                 }
             };
@@ -134,25 +135,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-       // showMyContactActivity();
+        showMyContactActivity();
     }
 
-    private void showContactActivity() {
-        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-        contactsList = (ListView) findViewById(R.id.listView);
-        String sort =  ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + "ASC";
-        Cursor cursor = getContentResolver().query(uri,null, null,null,sort);
-        cursorAdapter =
-                new SimpleCursorAdapter(
-                        this,
-                        R.layout.contacts_list_item,
-                        cursor,
-                        FROM_COLUMNS,
-                        TO_IDS,
-                        0);
-        contactsList.setAdapter(cursorAdapter);// TODO add update to the contact cursor every loaded/flash.
-        cursor.close();
-    }
 
 
     public void openPrioritySet(View view) {
