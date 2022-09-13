@@ -13,6 +13,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ public class MyContactTable extends SQLiteOpenHelper {
     //database data
 
     private static final String DB_NAME = "my_contacts_db.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
     public static final String DETAILS_TABLE_NAME = "details_table";
     public static final String TABLE_NAME = "table_name";
     public static final String LAST_UPDATE = "last_update";
@@ -48,10 +49,12 @@ public class MyContactTable extends SQLiteOpenHelper {
             ContactsContract.CommonDataKinds.Photo.PHOTO_URI,
             ContactsContract.CommonDataKinds.Phone.CONTACT_ID
     };
+    private static final String[] FROM_COLUMNS_CALL = {CallLog.Calls.NUMBER, CallLog.Calls.DATE};
     private static long lastDateUpdate = 0;
     public static long getLastDateUpdate() {
         return lastDateUpdate;
     }
+    public static Context sContext;
 
     public static void setLastDateUpdate(long lastDateUpdate) {
         MyContactTable.lastDateUpdate = lastDateUpdate;
@@ -62,9 +65,11 @@ public class MyContactTable extends SQLiteOpenHelper {
    public MyContactTable (Context context)
    {
        super(context, DB_NAME,null,DB_VERSION);
+       sContext = context;
    }
    public MyContactTable(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
+        sContext = context;
     }
 
     // create empty table
@@ -81,7 +86,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                 + CONTACT_ID_COL +  " INTEGER, "
                 + NAME_COL + " TEXT, "
                 + PHONE_COL + " INTEGER, "
-                + PHOTO_SRC_COL + "TEXT,  "
+                + PHOTO_SRC_COL + " TEXT,  "
                 + LAST_CALL_COL +  " INTEGER, "
                 + PRIORITY_TYPE_COL + " INTEGER)";
         db.execSQL(query);
@@ -91,7 +96,7 @@ public class MyContactTable extends SQLiteOpenHelper {
     {
         SQLiteDatabase db = null;
         Cursor cursor = null;
-        ArrayList<MyContact> list = null;
+        ArrayList<MyContact> list = new ArrayList<>();
         try {
             db = getReadableDatabase();
 
@@ -126,11 +131,11 @@ public class MyContactTable extends SQLiteOpenHelper {
         }
         return list;
     }
-    public Map<Integer,MyContact> getContactMap()
+    public HashMap<Integer,MyContact> getContactMap()
     {
         SQLiteDatabase db = null;
         Cursor cursor = null;
-        Map<Integer,MyContact> contactMap = null;
+        HashMap<Integer,MyContact> contactMap = new HashMap<>();
         try {
             db = getReadableDatabase();
 
@@ -156,8 +161,12 @@ public class MyContactTable extends SQLiteOpenHelper {
             }
         }
         finally {
-            db.close();
-            cursor.close();
+            if ((db != null)) {
+                db.close();
+            }
+            if (cursor != null) {
+                cursor.close();
+            }
         }
         return contactMap;
     }
@@ -203,7 +212,7 @@ public class MyContactTable extends SQLiteOpenHelper {
         List<MyContact> l;
         SQLiteDatabase contactDb = this.getWritableDatabase();
         int contact_id = 0;
-        Map<Integer,MyContact> contactMap = getContactMap();
+        HashMap<Integer,MyContact> contactMap = getContactMap();
         try{
             cursor = contentResolver.query(
                     ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -224,9 +233,10 @@ public class MyContactTable extends SQLiteOpenHelper {
                 }while (cursor.moveToNext());
 
 
+            lastDateUpdate = 0;//TODO: delete me!
             cursor = contentResolver.query(
-                    CallLog.Calls.CONTENT_FILTER_URI,
-                    new String[]{CallLog.Calls.NUMBER, CallLog.Calls.DATE},
+                    CallLog.Calls.CONTENT_URI,
+                    FROM_COLUMNS_CALL,
                     CallLog.Calls.DATE + " > " + lastDateUpdate +
                     " AND type = " + CallLog.Calls.INCOMING_TYPE +
                     " OR type = " + CallLog.Calls.OUTGOING_TYPE,
@@ -253,8 +263,9 @@ public class MyContactTable extends SQLiteOpenHelper {
 
         }
         finally {
-            cursor.moveToLast();
-            setLastDateUpdate(cursor.getLong(1));//date
+            if (cursor.moveToLast()) {
+                setLastDateUpdate(cursor.getLong(1));//date
+            }
             contactDb.close();
             cursor.close();
         }
@@ -311,11 +322,14 @@ public class MyContactTable extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // this method is called to check if the table exists already.
         db.execSQL("DROP TABLE IF EXISTS " + CONTACTS_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + DETAILS_TABLE_NAME);
         onCreate(db);
     }
 
     public void updateTableFromMap(Map<Integer, MyContact> contactMap) {
         SQLiteDatabase db;
+        Cursor cursor = null;
+        ContentResolver contentResolver = sContext.getContentResolver();
         try{
             db = getWritableDatabase();
             for (MyContact c: contactMap.values()) {
@@ -324,6 +338,14 @@ public class MyContactTable extends SQLiteOpenHelper {
                     db.delete(CONTACTS_TABLE_NAME,ID_COL + " = " + c.getContactId(),null);
                 }
                 else {
+                    cursor = contentResolver.query(
+                            CallLog.Calls.CONTENT_URI,
+                            FROM_COLUMNS_CALL,
+                            CallLog.Calls.DATE + " > " + lastDateUpdate +
+                                    " AND type = " + CallLog.Calls.INCOMING_TYPE +
+                                    " OR type = " + CallLog.Calls.OUTGOING_TYPE,
+                            null,
+                            CallLog.Calls.DEFAULT_SORT_ORDER);
                     ContentValues cv = contactToVc(c);
                     db.update(CONTACTS_TABLE_NAME, cv, ID_COL + " = " + c.getContactId(),null);
                 }
