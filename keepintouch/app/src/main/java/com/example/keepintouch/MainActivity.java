@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
+    //fixme: fix the intent
     public void openPrioritySet(View view) {
         Intent myIntent = new Intent(MainActivity.this, PrioritySetActivity.class);
         startActivity(myIntent);

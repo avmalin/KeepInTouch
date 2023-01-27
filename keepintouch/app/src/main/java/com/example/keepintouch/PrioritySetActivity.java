@@ -34,7 +34,7 @@ public class PrioritySetActivity extends AppCompatActivity {
         setContentView(R.layout.activity_priority_set);
         myContactTable = new MyContactTable(this);//TODO check if works
         ListView listView = findViewById(R.id.listViewPriority);
-        RadioGroup radioGroup = findViewById(R.id.rg_priority);
+//        RadioGroup radioGroup = findViewById(R.id.rg_priority);
 
 
 
@@ -47,7 +47,7 @@ public class PrioritySetActivity extends AppCompatActivity {
                 if (contactPriority != null) {
                     contactPriority.setVisibility(View.GONE);
                 }
-                contactPriority = view.findViewById(R.id.contactPriority);
+                contactPriority = view.findViewById(R.id.rg_priority1);
                 contactPriority.setVisibility(View.VISIBLE);
                 /* by fragment  -- not use
                 // RbFragment fragment = new RbFragment(PrioritySetActivity.this);
@@ -77,7 +77,7 @@ public class PrioritySetActivity extends AppCompatActivity {
                 if (contactPriority != null) {
                     contactPriority.setVisibility(View.GONE);
                 }
-                contactPriority = view.findViewById(R.id.contactPriority);
+                contactPriority = view.findViewById(R.id.rg_priority1);
                 contactPriority.setVisibility(View.VISIBLE);
             }
         });
