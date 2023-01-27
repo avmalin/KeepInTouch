@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showMyContactActivity() {
-        contactsList = (ListView) findViewById(R.id.listView);
+        contactsList = findViewById(R.id.listView);
         ArrayList<MyContact> listContact;
        // Map<Integer,MyContact> contactMap = null;
 
@@ -114,10 +114,10 @@ public class MainActivity extends AppCompatActivity {
                 if (convertView == null) {
                     convertView = LayoutInflater.from(getContext()).inflate(R.layout.contacts_list_item, parent, false);
                 }
-                TextView tvName = (TextView) convertView.findViewById(R.id.tv_name);
-                TextView tvNumber = (TextView) convertView.findViewById(R.id.tv_number);
-                ImageView ivView = (ImageView) convertView.findViewById(R.id.iv_image);
-                TextView tvId = (TextView) convertView.findViewById(R.id.tv_contact_id);
+                TextView tvName = convertView.findViewById(R.id.tv_name);
+                TextView tvNumber = convertView.findViewById(R.id.tv_number);
+                ImageView ivView = convertView.findViewById(R.id.iv_image);
+                TextView tvId = convertView.findViewById(R.id.tv_contact_id);
 
                 tvName.setText(contact.getName());
                 tvNumber.setText(contact.getNumber());

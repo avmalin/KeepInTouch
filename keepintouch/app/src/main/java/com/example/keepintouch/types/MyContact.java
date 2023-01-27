@@ -11,6 +11,7 @@ public class MyContact {
     private Date mBirthday;
     private PriorityType mPriorityType;
     private int mContactId;
+    private long mLastCall;
 
     public void setName(String name) {
         mName = name;
@@ -32,7 +33,6 @@ public class MyContact {
         mPriorityType = priorityType;
     }
 
-    private long mLastCall;
 
 
     public Date lastUpdate;
@@ -44,6 +44,7 @@ public class MyContact {
         mBirthday = null;
         mPhotoSrc = null;
         mPriorityType = PriorityType.NEVER;
+        mLastCall = 0;
 
     }
     public MyContact(int id,  PriorityType priorityType, long lastCall, String number,String photoSrc,String name){
@@ -60,6 +61,14 @@ public class MyContact {
         mNumber = number;
         mBirthday = birthday;
         mPhotoSrc = photoSrc;
+        mLastCall = 0;
+    }
+    public MyContact(int id, PriorityType type, String number)
+    {
+        mContactId = id;
+        mPriorityType = type;
+        mLastCall = 0;
+        mNumber = number;
     }
     public MyContact(int id, PriorityType type)
     {
@@ -67,6 +76,7 @@ public class MyContact {
         mPriorityType = type;
     }
 //TODO: update constructor ContactsContract.contacts
+// TODO: support few phone number to the same contacts,
     public MyContact(ContactsContract.Contacts contacts) {
         mName=null;
         mNumber=null;

@@ -55,13 +55,14 @@ public class ContactsRetrieverImpl implements ContactsRetriever {
             {
                 do {
                     for (MyContact m:mMyContacts) {
-                        if(m.getNumber() == cursor.getString(0))
+                        if(m.getNumber().equals(cursor.getString(0)))
                             m.setLastCall(cursor.getInt(1));
                     }
                 }while (cursor.moveToNext());
             }
 
         }finally {
+            assert cursor != null;
             cursor.close();
         }
 

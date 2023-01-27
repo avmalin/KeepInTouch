@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("ConstantConditions")
 public class MyContactTable extends SQLiteOpenHelper {
     //database data
 
@@ -192,8 +193,36 @@ public class MyContactTable extends SQLiteOpenHelper {
     }
 
 
-    private long getLastCallById(int contact_id) {
-        return 0; // TODO implement the function
+    private long getLastCallById(String contact_number) {
+        ContentResolver contentResolver = sContext.getContentResolver();
+        Cursor cursor = null;
+        long date = 0;
+        String number = null;
+        try {
+            cursor = contentResolver.query(
+                    CallLog.Calls.CONTENT_URI,
+                    FROM_COLUMNS_CALL,
+                    CallLog.Calls.DATE + " > " + lastDateUpdate +
+                            " AND type = " + CallLog.Calls.INCOMING_TYPE +
+                            " OR type = " + CallLog.Calls.OUTGOING_TYPE,
+                    null,
+                    CallLog.Calls.DEFAULT_SORT_ORDER);
+              if (cursor != null && cursor.moveToFirst())
+              {
+                  do {
+                      if (cursor.getString(0).equals(number))
+                          date = cursor.getLong(1);
+                  }while (cursor.moveToNext());
+              }
+
+        }
+        finally {
+            if (cursor != null)
+            {
+                cursor.close();
+            }
+        }
+        return date;
     }
 
     //update the last_call column
@@ -326,10 +355,10 @@ public class MyContactTable extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    // this function gets contact map with id and priority, find the last call date and update the table.
     public void updateTableFromMap(Map<Integer, MyContact> contactMap) {
         SQLiteDatabase db;
         Cursor cursor = null;
-        ContentResolver contentResolver = sContext.getContentResolver();
         try{
             db = getWritableDatabase();
             for (MyContact c: contactMap.values()) {
@@ -338,14 +367,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                     db.delete(CONTACTS_TABLE_NAME,ID_COL + " = " + c.getContactId(),null);
                 }
                 else {
-                    cursor = contentResolver.query(
-                            CallLog.Calls.CONTENT_URI,
-                            FROM_COLUMNS_CALL,
-                            CallLog.Calls.DATE + " > " + lastDateUpdate +
-                                    " AND type = " + CallLog.Calls.INCOMING_TYPE +
-                                    " OR type = " + CallLog.Calls.OUTGOING_TYPE,
-                            null,
-                            CallLog.Calls.DEFAULT_SORT_ORDER);
+                    c.setLastCall(getLastCallById(c.getNumber()));// update the last Call because of lastUpdate parameter.
                     ContentValues cv = contactToVc(c);
                     db.update(CONTACTS_TABLE_NAME, cv, ID_COL + " = " + c.getContactId(),null);
                 }

@@ -35,6 +35,9 @@ public class PrioritySetActivity extends AppCompatActivity {
         myContactTable = new MyContactTable(this);//TODO check if works
         ListView listView = findViewById(R.id.listViewPriority);
         RadioGroup radioGroup = findViewById(R.id.rg_priority);
+
+
+
         contactPriority=null;
         contactMap = new HashMap<>();
 
@@ -79,10 +82,8 @@ public class PrioritySetActivity extends AppCompatActivity {
             }
         });
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-        Cursor cursor = null;
         String sort =  ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC";
-        try {
-            cursor = getContentResolver().query(uri, null, null, null, sort);
+        try (Cursor cursor = getContentResolver().query(uri, null, null, null, sort)) {
             cursorAdapter =
                     new SimpleCursorAdapter(
                             this,
@@ -90,7 +91,7 @@ public class PrioritySetActivity extends AppCompatActivity {
                             cursor,
                             MainActivity.FROM_COLUMNS,
                             MainActivity.TO_IDS,
-                            0){
+                            0) {
                         @Override
                         public View getView(int position, View convertView, ViewGroup parent) {
                             View v = super.getView(position, convertView, parent);
@@ -99,39 +100,34 @@ public class PrioritySetActivity extends AppCompatActivity {
                                 @Override
                                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                                     int rbId = group.getCheckedRadioButtonId();
-                                    View parent = (View)group.getParent().getParent();
-                                    TextView textView = (TextView)parent.findViewById(R.id.tv_contact_id);
+                                    View parent = (View) group.getParent().getParent();
+                                    TextView textView = parent.findViewById(R.id.tv_contact_id);
                                     int cId = Integer.parseInt(textView.getText().toString());
+                                    textView = parent.findViewById(R.id.tv_number);
+                                    String number = textView.getText().toString();
                                     PriorityType type;
 
-                                    switch (rbId){
-                                        case R.id.rb_week:
-                                            type = PriorityType.WEEKLY;
-                                            break;
-                                        case R.id.rb_month:
-                                            type = PriorityType.MONTHLY;
-                                            break;
-                                        case R.id.rb_half_year:
-                                            type = PriorityType.HALF_YEAR;
-                                            break;
-                                        case R.id.rb_year:
+                                    if(rbId == R.id.rb_week)
+                                        type = PriorityType.WEEKLY;
+                                    else if(rbId== R.id.rb_month)
+                                        type = PriorityType.MONTHLY;
+                                    else if (rbId==R.id.rb_half_year)
+                                        type = PriorityType.HALF_YEAR;
+                                    else if(rbId==R.id.rb_year)
                                             type = PriorityType.YEARLY;
-                                            break;
-                                        default:
+                                    else
                                             type = PriorityType.NEVER;
-                                    }
-                                    contactMap.put(cId, new MyContact(cId,type));
+
+                                    contactMap.put(cId, new MyContact(cId, type, number));
 
                                 }
                             });
                             return v;
                         }
                     };
-            listView.setAdapter(cursorAdapter);// TODO add update to the contact cursor every loaded/flash.
+            listView.setAdapter(cursorAdapter);
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println(e);
         }
 

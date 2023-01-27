@@ -13,29 +13,34 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <RadioButton
+            android:minHeight="48dp"
             android:id="@+id/rb_week"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/once_a_week"/>
         <RadioButton
+            android:minHeight="48dp"
             android:id="@+id/rb_month"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/once_a_month" />
 
         <RadioButton
+            android:minHeight="48dp"
             android:id="@+id/rb_half_year"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/once_every_six_month" />
 
         <RadioButton
+            android:minHeight="48dp"
             android:id="@+id/rb_year"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/once_a_year"/>
 
         <RadioButton
+            android:minHeight="48dp"
             android:id="@+id/rb_never"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
