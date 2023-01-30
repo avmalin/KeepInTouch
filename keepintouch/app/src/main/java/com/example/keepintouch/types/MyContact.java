@@ -10,7 +10,7 @@ public class MyContact {
     private String mPhotoSrc;
     private Date mBirthday;
     private PriorityType mPriorityType;
-    private int mContactId;
+    private long mContactId;
     private long mLastCall;
 
     public void setName(String name) {
@@ -63,14 +63,14 @@ public class MyContact {
         mPhotoSrc = photoSrc;
         mLastCall = 0;
     }
-    public MyContact(int id, PriorityType type, String number)
+    public MyContact(long id, PriorityType type, String number)
     {
         mContactId = id;
         mPriorityType = type;
         mLastCall = 0;
         mNumber = number;
     }
-    public MyContact(int id, PriorityType type)
+    public MyContact(long id, PriorityType type)
     {
         mContactId = id;
         mPriorityType = type;
@@ -116,7 +116,7 @@ public class MyContact {
 
     }
 
-    public int getContactId() {
+    public long getContactId() {
         return mContactId;
     }
 

@@ -1,4 +1,5 @@
 package com.example.keepintouch.types;
+import com.example.keepintouch.R;
 
 public enum PriorityType {
     WEEKLY ,
@@ -16,6 +17,21 @@ public enum PriorityType {
             case 2:
                 return HALF_YEAR;
             case 3:
+                return YEARLY;
+            default:
+                return NEVER;
+        }
+    }
+    public static PriorityType valueOf(int id)
+    {
+        switch (id) {
+            case R.id.rb_week:
+                return WEEKLY;
+            case R.id.rb_month:
+                return MONTHLY;
+            case R.id.rb_half_year:
+                return HALF_YEAR;
+            case R.id.rb_year:
                 return YEARLY;
             default:
                 return NEVER;

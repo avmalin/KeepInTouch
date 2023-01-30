@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -24,66 +25,41 @@ import java.util.HashMap;
 public class PrioritySetActivity extends AppCompatActivity {
 
     CursorAdapter cursorAdapter = null;
+    Cursor cursor= null;
+    int selectedItem = -1;
     MyContactTable myContactTable;
     View contactPriority;
-    HashMap<Integer, MyContact> contactMap;
+    HashMap<Long, MyContact> contactMap;
     int cId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_priority_set);
+
+
+
         myContactTable = new MyContactTable(this);//TODO check if works
         ListView listView = findViewById(R.id.listViewPriority);
 //        RadioGroup radioGroup = findViewById(R.id.rg_priority);
 
 
-
+        //init
         contactPriority=null;
         contactMap = new HashMap<>();
 
-        listView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (contactPriority != null) {
-                    contactPriority.setVisibility(View.GONE);
-                }
-                contactPriority = view.findViewById(R.id.rg_priority1);
-                contactPriority.setVisibility(View.VISIBLE);
-                /* by fragment  -- not use
-                // RbFragment fragment = new RbFragment(PrioritySetActivity.this);
-                //FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                //Bundle data = new Bundle();
-
-                //Cursor c = (Cursor) cursorAdapter.getItem(position);
-                //cId = c.getInt(3);
-                //String cName = c.getString(1);
-
-                //data.putInt("id",cId);
-                //data.putString("name",cName);
-
-                //fragment.setArguments(data);
-                //fragmentTransaction.replace(R.id.contactFragment,fragment).commit();
-                 */
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                contactPriority.setVisibility(View.GONE);
-                contactPriority = null;
-            }
-        });
+        //define on-click item
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (contactPriority != null) {
-                    contactPriority.setVisibility(View.GONE);
-                }
-                contactPriority = view.findViewById(R.id.rg_priority1);
-                contactPriority.setVisibility(View.VISIBLE);
+                selectedItem = position;
+                cursorAdapter.notifyDataSetChanged();
+
             }
         });
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         String sort =  ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC";
-        try (Cursor cursor = getContentResolver().query(uri, null, null, null, sort)) {
+        try  {
+            cursor = getContentResolver().query(uri, null, null, null, sort);
             cursorAdapter =
                     new SimpleCursorAdapter(
                             this,
@@ -94,35 +70,38 @@ public class PrioritySetActivity extends AppCompatActivity {
                             0) {
                         @Override
                         public View getView(int position, View convertView, ViewGroup parent) {
-                            View v = super.getView(position, convertView, parent);
-                            RadioGroup rg = v.findViewById(R.id.rg_priority);
-                            rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                                @Override
-                                public void onCheckedChanged(RadioGroup group, int checkedId) {
-                                    int rbId = group.getCheckedRadioButtonId();
-                                    View parent = (View) group.getParent().getParent();
-                                    TextView textView = parent.findViewById(R.id.tv_contact_id);
-                                    int cId = Integer.parseInt(textView.getText().toString());
-                                    textView = parent.findViewById(R.id.tv_number);
-                                    String number = textView.getText().toString();
-                                    PriorityType type;
+                            if (convertView == null) {
+                                convertView = LayoutInflater.from(PrioritySetActivity.this).inflate(R.layout.contacts_list_item, parent, false);
+                            }
+                            Cursor cursor = getCursor();
+                            cursor.moveToPosition(position);
+                            ListView listView = findViewById(R.id.listViewPriority);
 
-                                    if(rbId == R.id.rb_week)
-                                        type = PriorityType.WEEKLY;
-                                    else if(rbId== R.id.rb_month)
-                                        type = PriorityType.MONTHLY;
-                                    else if (rbId==R.id.rb_half_year)
-                                        type = PriorityType.HALF_YEAR;
-                                    else if(rbId==R.id.rb_year)
-                                            type = PriorityType.YEARLY;
-                                    else
-                                            type = PriorityType.NEVER;
+                            //get the index of the data in the cursor.
+                            int nameIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+                            int phoneIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                            int photoIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.PHOTO_URI);
+                            int idIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
 
-                                    contactMap.put(cId, new MyContact(cId, type, number));
+                            //set the data into the view item.
+                            ((TextView)convertView.findViewById(R.id.tv_name)).setText(cursor.getString(nameIndex));
+                            ((TextView)convertView.findViewById(R.id.tv_number)).setText(cursor.getString(phoneIndex));
+                            //  ((ImageView)v.findViewById(R.id.iv_image)).setImageURI(Uri.parse(cursor.getString(photoIndex)));
 
-                                }
-                            });
-                            return v;
+                            //set checkboxes to visible to only selected  item
+                            if (position == selectedItem)
+                            {
+                                RadioGroup radioGroup = convertView.findViewById(R.id.rg_priority1);
+                                radioGroup.setVisibility(View.VISIBLE);
+                                radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                                    @Override
+                                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+                                        contactMap.put(cursor.getLong(idIndex),new MyContact(cursor.getLong(idIndex), PriorityType.valueOf(checkedId)));
+                                    }
+                                });
+                            }
+                            else convertView.findViewById(R.id.rg_priority1).setVisibility(View.GONE);
+                            return convertView;
                         }
                     };
             listView.setAdapter(cursorAdapter);
@@ -130,35 +109,6 @@ public class PrioritySetActivity extends AppCompatActivity {
         } catch (Exception e) {
             System.out.println(e);
         }
-
-        /*
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                int rbId = group.getCheckedRadioButtonId();
-                View parent = (View)group.getParent();
-                int cId = Integer.parseInt(((TextView)parent.findViewById(R.id.tv_contact_id)).getText().toString());
-                PriorityType type;
-
-                switch (rbId){
-                    case R.id.rb_week:
-                        type = PriorityType.WEEKLY;
-                        break;
-                    case R.id.rb_month:
-                        type = PriorityType.MONTHLY;
-                        break;
-                    case R.id.rb_half_year:
-                        type = PriorityType.HALF_YEAR;
-                        break;
-                    case R.id.rb_year:
-                        type = PriorityType.YEARLY;
-                        break;
-                    default:
-                        type = PriorityType.NEVER;
-                }
-                contactMap.put(cId, new MyContact(cId,type));
-            }
-        });*/
     }
 
 

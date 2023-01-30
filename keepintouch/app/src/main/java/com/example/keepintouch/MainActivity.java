@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 tvName.setText(contact.getName());
                 tvNumber.setText(contact.getNumber());
                 ivView.setImageURI(Uri.parse(contact.getPhotoSrc()));
-                tvId.setText(contact.getContactId());
+                tvId.setText((int) contact.getContactId());
                 return convertView;
             }
         };

@@ -132,11 +132,11 @@ public class MyContactTable extends SQLiteOpenHelper {
         }
         return list;
     }
-    public HashMap<Integer,MyContact> getContactMap()
+    public HashMap<Long, MyContact> getContactMap()
     {
         SQLiteDatabase db = null;
         Cursor cursor = null;
-        HashMap<Integer,MyContact> contactMap = new HashMap<>();
+        HashMap<Long, MyContact> contactMap = new HashMap<>();
         try {
             db = getReadableDatabase();
 
@@ -151,7 +151,7 @@ public class MyContactTable extends SQLiteOpenHelper {
             if(cursor != null && cursor.moveToFirst())
             {
                 do {
-                    contactMap.put(cursor.getInt(0),new MyContact(
+                    contactMap.put(cursor.getLong(0),new MyContact(
                             cursor.getInt(0), //id
                             PriorityType.fromInt(cursor.getInt(1)),//priorityType
                             cursor.getInt(2),//last call
@@ -240,8 +240,8 @@ public class MyContactTable extends SQLiteOpenHelper {
         ContentValues cv;
         List<MyContact> l;
         SQLiteDatabase contactDb = this.getWritableDatabase();
-        int contact_id = 0;
-        HashMap<Integer,MyContact> contactMap = getContactMap();
+        long contact_id = 0;
+        HashMap<Long, MyContact> contactMap = getContactMap();
         try{
             cursor = contentResolver.query(
                     ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -327,10 +327,10 @@ public class MyContactTable extends SQLiteOpenHelper {
         }
         db.close();
     }
-    private int getIdByNumber(Context context, int number) {
+    private Long getIdByNumber(Context context, int number) {
        ContentResolver contentResolver = context.getContentResolver();
        Cursor cursor  = null;
-       int id = -1;
+       long id = -1;
        try {
            cursor = contentResolver.query(
                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -339,7 +339,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                    null,
                    null);
            if (cursor != null && cursor.moveToFirst())
-               id = cursor.getInt(0);
+               id = cursor.getLong(0);
        }
        finally {
            cursor.close();
@@ -356,7 +356,7 @@ public class MyContactTable extends SQLiteOpenHelper {
     }
 
     // this function gets contact map with id and priority, find the last call date and update the table.
-    public void updateTableFromMap(Map<Integer, MyContact> contactMap) {
+    public void updateTableFromMap(Map<Long, MyContact> contactMap) {
         SQLiteDatabase db;
         Cursor cursor = null;
         try{
