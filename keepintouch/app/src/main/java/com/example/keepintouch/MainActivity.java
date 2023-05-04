@@ -119,10 +119,14 @@ public class MainActivity extends AppCompatActivity {
                 ImageView ivView = convertView.findViewById(R.id.iv_image);
                 TextView tvId = convertView.findViewById(R.id.tv_contact_id);
 
+
                 tvName.setText(contact.getName());
                 tvNumber.setText(contact.getNumber());
-                ivView.setImageURI(Uri.parse(contact.getPhotoSrc()));
-                tvId.setText((int) contact.getContactId());
+                String photoUri = contact.getPhotoSrc();
+                if (photoUri != null) {
+                    ivView.setImageURI(Uri.parse(photoUri));
+                }
+                tvId.setText(String.valueOf(contact.getContactId()));
                 return convertView;
             }
         };

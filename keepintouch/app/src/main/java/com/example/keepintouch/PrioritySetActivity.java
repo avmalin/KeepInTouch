@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.SimpleCursorAdapter;
@@ -86,17 +87,21 @@ public class PrioritySetActivity extends AppCompatActivity {
                             //set the data into the view item.
                             ((TextView)convertView.findViewById(R.id.tv_name)).setText(cursor.getString(nameIndex));
                             ((TextView)convertView.findViewById(R.id.tv_number)).setText(cursor.getString(phoneIndex));
-                            //  ((ImageView)v.findViewById(R.id.iv_image)).setImageURI(Uri.parse(cursor.getString(photoIndex)));
-
+                            String photoUri = cursor.getString(photoIndex);
+                            if (photoUri != null) {
+                                ((ImageView) convertView.findViewById(R.id.iv_image)).setImageURI(Uri.parse(photoUri));
+                            }
                             //set checkboxes to visible to only selected  item
                             if (position == selectedItem)
                             {
                                 RadioGroup radioGroup = convertView.findViewById(R.id.rg_priority1);
                                 radioGroup.setVisibility(View.VISIBLE);
+                                radioGroup.setTag(R.id.tv_contact_id,cursor.getLong(idIndex));
                                 radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                                     @Override
                                     public void onCheckedChanged(RadioGroup group, int checkedId) {
-                                        contactMap.put(cursor.getLong(idIndex),new MyContact(cursor.getLong(idIndex), PriorityType.valueOf(checkedId)));
+
+                                        contactMap.put((long)group.getTag(R.id.tv_contact_id),new MyContact((long)group.getTag(R.id.tv_contact_id), PriorityType.valueOf(checkedId),(String)group.getTag(R.id.tv_number),(String)group.getTag(R.id.tv_name),(String)group.getTag(R.id.iv_image)));
                                     }
                                 });
                             }

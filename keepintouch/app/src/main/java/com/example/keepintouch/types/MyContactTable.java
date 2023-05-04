@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.CallLog;
@@ -50,6 +51,7 @@ public class MyContactTable extends SQLiteOpenHelper {
             ContactsContract.CommonDataKinds.Photo.PHOTO_URI,
             ContactsContract.CommonDataKinds.Phone.CONTACT_ID
     };
+
     private static final String[] FROM_COLUMNS_CALL = {CallLog.Calls.NUMBER, CallLog.Calls.DATE};
     private static long lastDateUpdate = 0;
     public static long getLastDateUpdate() {
@@ -112,13 +114,14 @@ public class MyContactTable extends SQLiteOpenHelper {
             if(cursor != null && cursor.moveToFirst())
             {
                 do {
+
                     list.add(new MyContact(
-                            cursor.getInt(0),
-                            PriorityType.fromInt(cursor.getInt(1)),
-                            cursor.getInt(2),
-                            cursor.getString(3),
-                            cursor.getString(4),
-                            cursor.getString(5)));
+                            cursor.getInt(cursor.getColumnIndexOrThrow(CONTACT_ID_COL)),
+                            PriorityType.fromInt(cursor.getInt(cursor.getColumnIndexOrThrow(PRIORITY_TYPE_COL))),
+                            cursor.getInt(cursor.getColumnIndexOrThrow(LAST_CALL_COL)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(PHONE_COL)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(PHOTO_SRC_COL)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(NAME_COL))));
                 }while (cursor.moveToNext());
             }
         }
@@ -151,13 +154,13 @@ public class MyContactTable extends SQLiteOpenHelper {
             if(cursor != null && cursor.moveToFirst())
             {
                 do {
-                    contactMap.put(cursor.getLong(0),new MyContact(
-                            cursor.getInt(0), //id
-                            PriorityType.fromInt(cursor.getInt(1)),//priorityType
-                            cursor.getInt(2),//last call
-                            cursor.getString(3),//phone number
-                            cursor.getString(4),//photo
-                            cursor.getString(5)));//name
+                    contactMap.put(cursor.getLong(cursor.getColumnIndexOrThrow(CONTACT_ID_COL)),new MyContact(
+                            cursor.getInt(cursor.getColumnIndexOrThrow(CONTACT_ID_COL)),
+                            PriorityType.fromInt(cursor.getInt(cursor.getColumnIndexOrThrow(PRIORITY_TYPE_COL))),
+                            cursor.getInt(cursor.getColumnIndexOrThrow(LAST_CALL_COL)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(PHONE_COL)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(PHOTO_SRC_COL)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(NAME_COL))));
                 }while (cursor.moveToNext());
             }
         }
@@ -171,6 +174,7 @@ public class MyContactTable extends SQLiteOpenHelper {
         }
         return contactMap;
     }
+    
     //add MyContact to the table.
     public void addContact(MyContact myContact)
     {
@@ -184,9 +188,9 @@ public class MyContactTable extends SQLiteOpenHelper {
     private ContentValues contactToVc(MyContact myContact) {
         ContentValues cv = new ContentValues();
         cv.put(CONTACT_ID_COL,myContact.getContactId());
-//        cv.put(NAME_COL, myContact.getName());
-//        cv.put(PHONE_COL,myContact.getNumber());
-//        cv.put(PHOTO_SRC_COL, myContact.getPhotoSrc());
+        cv.put(NAME_COL, myContact.getName());
+        cv.put(PHONE_COL,myContact.getNumber());
+        cv.put(PHOTO_SRC_COL, myContact.getPhotoSrc());
         cv.put(LAST_CALL_COL, myContact.getLastCall());
         cv.put(PRIORITY_TYPE_COL, myContact.getPriorityType().toString());
         return cv;
@@ -209,9 +213,11 @@ public class MyContactTable extends SQLiteOpenHelper {
                     CallLog.Calls.DEFAULT_SORT_ORDER);
               if (cursor != null && cursor.moveToFirst())
               {
+                  int numberIndex =  cursor.getColumnIndexOrThrow(CallLog.Calls.NUMBER);
+                  int dateIndex =  cursor.getColumnIndexOrThrow(CallLog.Calls.DATE);
                   do {
-                      if (cursor.getString(0).equals(number))
-                          date = cursor.getLong(1);
+                      if (cursor.getString(numberIndex).equals(number))
+                          date = cursor.getLong(dateIndex);
                   }while (cursor.moveToNext());
               }
 
@@ -239,27 +245,35 @@ public class MyContactTable extends SQLiteOpenHelper {
         Cursor cursor = null;
         ContentValues cv;
         List<MyContact> l;
-        SQLiteDatabase contactDb = this.getWritableDatabase();
+        SQLiteDatabase contactDb = null;
         long contact_id = 0;
         HashMap<Long, MyContact> contactMap = getContactMap();
         try{
+            contactDb = this.getWritableDatabase();
             cursor = contentResolver.query(
                     ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                     FROM_CONTACT_COLUMNS,
                     null,
                     null,
                     null);
+
             if(cursor != null && cursor.moveToFirst())
+            {
+                int nameIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+                int phoneIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                int photoIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.PHOTO_URI);
+                int idIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
                 do {
-                    if(contactMap.containsKey(cursor.getInt(3)))
+                    if(contactMap.containsKey(cursor.getLong(idIndex)))
                     {
-                        MyContact c = contactMap.get(cursor.getInt(3));
-                        c.setNumber(cursor.getString(1));//phone number
-                        c.setName(cursor.getString(0));//name
-                        c.setPhotoSrc(cursor.getString(2));//photo);
+                        MyContact c = contactMap.get(cursor.getLong(idIndex));//id
+                        c.setNumber(cursor.getString(phoneIndex));//phone number
+                        c.setName(cursor.getString(nameIndex));//name
+                        c.setPhotoSrc(cursor.getString(photoIndex));//photo);
                         contactMap.put(c.getContactId(),c);
                     }
                 }while (cursor.moveToNext());
+            }
 
 
             lastDateUpdate = 0;//TODO: delete me!
@@ -274,7 +288,7 @@ public class MyContactTable extends SQLiteOpenHelper {
             if (cursor != null && cursor.moveToFirst())
             {
                 do {
-                    contact_id = getIdByNumber(context, cursor.getInt(0));
+                    contact_id = getIdByNumber(context, cursor.getString(0));
                     if (contactMap.containsKey(contact_id))
                     {
                         MyContact c = contactMap.get(contact_id);
@@ -291,11 +305,17 @@ public class MyContactTable extends SQLiteOpenHelper {
             }
 
         }
+        catch (SQLException e)
+        {
+            Log.e("DatabaseError", "Error accessing database", e);
+        }
         finally {
             if (cursor.moveToLast()) {
                 setLastDateUpdate(cursor.getLong(1));//date
             }
-            contactDb.close();
+            if (contactDb != null && contactDb.isOpen()){
+                contactDb.close();
+            }
             cursor.close();
         }
         calculationPriority(context);
@@ -327,7 +347,7 @@ public class MyContactTable extends SQLiteOpenHelper {
         }
         db.close();
     }
-    private Long getIdByNumber(Context context, int number) {
+    private Long getIdByNumber(Context context, String number) {
        ContentResolver contentResolver = context.getContentResolver();
        Cursor cursor  = null;
        long id = -1;
@@ -338,8 +358,10 @@ public class MyContactTable extends SQLiteOpenHelper {
                    ContactsContract.CommonDataKinds.Phone.NUMBER + " = " + number,
                    null,
                    null);
-           if (cursor != null && cursor.moveToFirst())
-               id = cursor.getLong(0);
+           if (cursor != null && cursor.moveToFirst()) {
+               int idIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
+               id = cursor.getLong(idIndex);
+           }
        }
        finally {
            cursor.close();
@@ -364,12 +386,17 @@ public class MyContactTable extends SQLiteOpenHelper {
             for (MyContact c: contactMap.values()) {
                 if(c.getPriorityType() == PriorityType.NEVER)
                 {
-                    db.delete(CONTACTS_TABLE_NAME,ID_COL + " = " + c.getContactId(),null);
+                    db.delete(CONTACTS_TABLE_NAME,CONTACT_ID_COL + " = " + c.getContactId(),null);
                 }
                 else {
                     c.setLastCall(getLastCallById(c.getNumber()));// update the last Call because of lastUpdate parameter.
                     ContentValues cv = contactToVc(c);
-                    db.update(CONTACTS_TABLE_NAME, cv, ID_COL + " = " + c.getContactId(),null);
+                    int result = db.update(CONTACTS_TABLE_NAME, cv, CONTACT_ID_COL + " = " + c.getContactId(),null);
+                    if (result == 0)
+                    {
+                        db.insert(CONTACTS_TABLE_NAME,null,cv);
+                    }
+
                 }
             }
             db.close();

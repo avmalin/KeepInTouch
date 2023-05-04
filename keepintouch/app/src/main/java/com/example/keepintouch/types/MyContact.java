@@ -63,12 +63,14 @@ public class MyContact {
         mPhotoSrc = photoSrc;
         mLastCall = 0;
     }
-    public MyContact(long id, PriorityType type, String number)
+    public MyContact(long id, PriorityType type, String number, String name, String photoSrc)
     {
         mContactId = id;
         mPriorityType = type;
         mLastCall = 0;
+        mPhotoSrc = photoSrc;
         mNumber = number;
+        mName = name;
     }
     public MyContact(long id, PriorityType type)
     {
@@ -97,7 +99,9 @@ public class MyContact {
     }
 
     public String getNumber() {
+        //TODO: if number is null update number.
         return mNumber;
+
     }
 
     public Date getBirthday() {

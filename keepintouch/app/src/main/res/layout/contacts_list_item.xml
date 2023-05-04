@@ -58,7 +58,7 @@
     <RadioGroup
         app:layout_constraintTop_toBottomOf="@+id/contactItem"
         android:orientation="horizontal"
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/rg_priority1"
         android:layout_width="match_parent"
         android:layout_height="70dp"
