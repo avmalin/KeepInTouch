@@ -23,7 +23,7 @@ public class MyContactTable extends SQLiteOpenHelper {
     //database data
 
     private static final String DB_NAME = "my_contacts_db.db";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
     public static final String DETAILS_TABLE_NAME = "details_table";
     public static final String TABLE_NAME = "table_name";
     public static final String LAST_UPDATE = "last_update";
@@ -88,7 +88,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + CONTACT_ID_COL +  " INTEGER, "
                 + NAME_COL + " TEXT, "
-                + PHONE_COL + " INTEGER, "
+                + PHONE_COL + " TEXT, "
                 + PHOTO_SRC_COL + " TEXT,  "
                 + LAST_CALL_COL +  " INTEGER, "
                 + PRIORITY_TYPE_COL + " INTEGER)";
@@ -155,7 +155,7 @@ public class MyContactTable extends SQLiteOpenHelper {
             {
                 do {
                     contactMap.put(cursor.getLong(cursor.getColumnIndexOrThrow(CONTACT_ID_COL)),new MyContact(
-                            cursor.getInt(cursor.getColumnIndexOrThrow(CONTACT_ID_COL)),
+                            cursor.getLong(cursor.getColumnIndexOrThrow(CONTACT_ID_COL)),
                             PriorityType.fromInt(cursor.getInt(cursor.getColumnIndexOrThrow(PRIORITY_TYPE_COL))),
                             cursor.getInt(cursor.getColumnIndexOrThrow(LAST_CALL_COL)),
                             cursor.getString(cursor.getColumnIndexOrThrow(PHONE_COL)),

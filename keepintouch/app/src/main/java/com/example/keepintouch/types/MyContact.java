@@ -47,7 +47,7 @@ public class MyContact {
         mLastCall = 0;
 
     }
-    public MyContact(int id,  PriorityType priorityType, long lastCall, String number,String photoSrc,String name){
+    public MyContact(long id,  PriorityType priorityType, long lastCall, String number,String photoSrc,String name){
         mContactId = id;
         mLastCall = lastCall;
         mPriorityType = priorityType;
