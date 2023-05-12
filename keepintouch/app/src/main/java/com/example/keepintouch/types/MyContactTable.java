@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.util.Log;
@@ -46,10 +47,9 @@ public class MyContactTable extends SQLiteOpenHelper {
             PHOTO_SRC_COL,
             NAME_COL};
     private final static String[] FROM_CONTACT_COLUMNS = {
-            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-            ContactsContract.CommonDataKinds.Phone.NUMBER,
-            ContactsContract.CommonDataKinds.Photo.PHOTO_URI,
-            ContactsContract.CommonDataKinds.Phone.CONTACT_ID
+            ContactsContract.Contacts.DISPLAY_NAME,
+            ContactsContract.Contacts.PHOTO_URI,
+            ContactsContract.Contacts._ID
     };
 
     private static final String[] FROM_COLUMNS_CALL = {CallLog.Calls.NUMBER, CallLog.Calls.DATE};
@@ -196,30 +196,35 @@ public class MyContactTable extends SQLiteOpenHelper {
         return cv;
     }
 
+    private long getLastCallById(long contact_id)
+    {
+        ContentResolver contentResolver = sContext.getContentResolver();
+        Cursor cursor = null;
+        try{
+            String[] projecton = {CallLog.Calls.DATE};
+            String[] selection ;
+        }
+        finally {
 
+        }
+        return 0;
+    }
     private long getLastCallById(String contact_number) {
         ContentResolver contentResolver = sContext.getContentResolver();
         Cursor cursor = null;
-        long date = 0;
+        long lastCallTime = 0;
         String number = null;
         try {
-            cursor = contentResolver.query(
-                    CallLog.Calls.CONTENT_URI,
-                    FROM_COLUMNS_CALL,
-                    CallLog.Calls.DATE + " > " + lastDateUpdate +
-                            " AND type = " + CallLog.Calls.INCOMING_TYPE +
-                            " OR type = " + CallLog.Calls.OUTGOING_TYPE,
-                    null,
-                    CallLog.Calls.DEFAULT_SORT_ORDER);
-              if (cursor != null && cursor.moveToFirst())
-              {
-                  int numberIndex =  cursor.getColumnIndexOrThrow(CallLog.Calls.NUMBER);
-                  int dateIndex =  cursor.getColumnIndexOrThrow(CallLog.Calls.DATE);
-                  do {
-                      if (cursor.getString(numberIndex).equals(number))
-                          date = cursor.getLong(dateIndex);
-                  }while (cursor.moveToNext());
-              }
+            String[] projection = {CallLog.Calls.DATE};
+            String selection = ContactsContract.Contacts._ID + " = ?";
+            String[] selectionArgs = {contact_number};
+
+            cursor = contentResolver.query(CallLog.Calls.CONTENT_URI, projection, selection, selectionArgs,CallLog.Calls.DATE + " DESC LIMIT 1");
+
+            if (cursor != null && cursor.moveToFirst()) {
+                lastCallTime = cursor.getLong(cursor.getColumnIndexOrThrow(CallLog.Calls.DATE));
+                // Do something with the last call time, e.g. display it in a TextView
+            }//todo: fix get last date.
 
         }
         finally {
@@ -228,7 +233,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                 cursor.close();
             }
         }
-        return date;
+        return lastCallTime;
     }
 
     //update the last_call column
@@ -251,7 +256,7 @@ public class MyContactTable extends SQLiteOpenHelper {
         try{
             contactDb = this.getWritableDatabase();
             cursor = contentResolver.query(
-                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    ContactsContract.Contacts.CONTENT_URI,
                     FROM_CONTACT_COLUMNS,
                     null,
                     null,
@@ -259,15 +264,13 @@ public class MyContactTable extends SQLiteOpenHelper {
 
             if(cursor != null && cursor.moveToFirst())
             {
-                int nameIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
-                int phoneIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                int photoIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.PHOTO_URI);
-                int idIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
+                int nameIndex = cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME);
+                int photoIndex = cursor.getColumnIndexOrThrow(ContactsContract.Contacts.PHOTO_URI);
+                int idIndex = cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID);
                 do {
                     if(contactMap.containsKey(cursor.getLong(idIndex)))
                     {
                         MyContact c = contactMap.get(cursor.getLong(idIndex));//id
-                        c.setNumber(cursor.getString(phoneIndex));//phone number
                         c.setName(cursor.getString(nameIndex));//name
                         c.setPhotoSrc(cursor.getString(photoIndex));//photo);
                         contactMap.put(c.getContactId(),c);
@@ -275,7 +278,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                 }while (cursor.moveToNext());
             }
 
-
+            // update LAST CALL
             lastDateUpdate = 0;//TODO: delete me!
             cursor = contentResolver.query(
                     CallLog.Calls.CONTENT_URI,
@@ -284,7 +287,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                     " AND type = " + CallLog.Calls.INCOMING_TYPE +
                     " OR type = " + CallLog.Calls.OUTGOING_TYPE,
                     null,
-                    CallLog.Calls.DEFAULT_SORT_ORDER);
+                    CallLog.Calls.DATE + " DESC");
             if (cursor != null && cursor.moveToFirst())
             {
                 do {
@@ -352,19 +355,23 @@ public class MyContactTable extends SQLiteOpenHelper {
        Cursor cursor  = null;
        long id = -1;
        try {
-           cursor = contentResolver.query(
+           Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI,Uri.encode(number));
+           cursor = contentResolver.query(uri, new String []{ContactsContract.Contacts._ID},null,null,null);
+           /*cursor = contentResolver.query(
                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                    new String[]{ContactsContract.CommonDataKinds.Phone.CONTACT_ID},
                    ContactsContract.CommonDataKinds.Phone.NUMBER + " = " + number,
                    null,
-                   null);
+                   null);*/
            if (cursor != null && cursor.moveToFirst()) {
-               int idIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
+               int idIndex = cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID);
                id = cursor.getLong(idIndex);
            }
        }
        finally {
-           cursor.close();
+           if (cursor != null) {
+               cursor.close();
+           }
        }
        return id;
     }

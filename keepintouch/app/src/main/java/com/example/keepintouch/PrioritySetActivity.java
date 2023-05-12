@@ -32,6 +32,16 @@ public class PrioritySetActivity extends AppCompatActivity {
     View contactPriority;
     HashMap<Long, MyContact> contactMap;
     int cId;
+    public final static String[] FROM_COLUMNS = {
+            ContactsContract.Contacts.DISPLAY_NAME,
+            ContactsContract.Contacts.PHOTO_URI,
+            ContactsContract.Contacts._ID
+    };
+    public final static int[] TO_IDS = {
+            R.id.tv_name,
+            R.id.iv_image,
+            R.id.tv_contact_id
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,17 +67,17 @@ public class PrioritySetActivity extends AppCompatActivity {
 
             }
         });
-        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-        String sort =  ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC";
+        Uri uri = ContactsContract.Contacts.CONTENT_URI;
+        String sort =  ContactsContract.Contacts.DISPLAY_NAME + " ASC";
         try  {
-            cursor = getContentResolver().query(uri, null, null, null, sort);
+            cursor = getContentResolver().query(uri, null, ContactsContract.Contacts.HAS_PHONE_NUMBER + " != 0", null, sort);
             cursorAdapter =
                     new SimpleCursorAdapter(
                             this,
                             R.layout.contacts_list_item,
                             cursor,
-                            MainActivity.FROM_COLUMNS,
-                            MainActivity.TO_IDS,
+                            FROM_COLUMNS,
+                            TO_IDS,
                             0) {
                         @Override
                         public View getView(int position, View convertView, ViewGroup parent) {
@@ -79,14 +89,12 @@ public class PrioritySetActivity extends AppCompatActivity {
                             ListView listView = findViewById(R.id.listViewPriority);
 
                             //get the index of the data in the cursor.
-                            int nameIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
-                            int phoneIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                            int photoIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.PHOTO_URI);
-                            int idIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
+                            int nameIndex = cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME);
+                            int photoIndex = cursor.getColumnIndexOrThrow(ContactsContract.Contacts.PHOTO_URI);
+                            int idIndex = cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID);
 
                             //set the data into the view item.
                             ((TextView)convertView.findViewById(R.id.tv_name)).setText(cursor.getString(nameIndex));
-                            ((TextView)convertView.findViewById(R.id.tv_number)).setText(cursor.getString(phoneIndex));
                             String photoUri = cursor.getString(photoIndex);
                             if (photoUri != null) {
                                 ((ImageView) convertView.findViewById(R.id.iv_image)).setImageURI(Uri.parse(photoUri));

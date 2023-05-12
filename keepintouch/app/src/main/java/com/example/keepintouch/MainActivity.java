@@ -24,6 +24,9 @@ import androidx.core.content.ContextCompat;
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Map;
@@ -118,8 +121,12 @@ public class MainActivity extends AppCompatActivity {
                 TextView tvNumber = convertView.findViewById(R.id.tv_number);
                 ImageView ivView = convertView.findViewById(R.id.iv_image);
                 TextView tvId = convertView.findViewById(R.id.tv_contact_id);
-
-
+                long date  = contact.getLastCall();
+                String lastDate = "";
+                if (date > 0) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+                    lastDate = formatter.format(Instant.ofEpochMilli(date));
+                }
                 tvName.setText(contact.getName());
                 tvNumber.setText(contact.getNumber());
                 String photoUri = contact.getPhotoSrc();
