@@ -201,8 +201,12 @@ public class MyContactTable extends SQLiteOpenHelper {
         ContentResolver contentResolver = sContext.getContentResolver();
         Cursor cursor = null;
         try{
-            String[] projecton = {CallLog.Calls.DATE};
-            String[] selection ;
+            String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER};
+            String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? " ;
+            String[] selectionArgs = {String.valueOf(contact_id)};
+            //TODO: trying work's with contect uri filter,
+            cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, selection, selectionArgs,null);
+
         }
         finally {
 
@@ -396,7 +400,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                     db.delete(CONTACTS_TABLE_NAME,CONTACT_ID_COL + " = " + c.getContactId(),null);
                 }
                 else {
-                    c.setLastCall(getLastCallById(c.getNumber()));// update the last Call because of lastUpdate parameter.
+                    c.setLastCall(getLastCallById(c.getContactId()));// update the last Call because of lastUpdate parameter.
                     ContentValues cv = contactToVc(c);
                     int result = db.update(CONTACTS_TABLE_NAME, cv, CONTACT_ID_COL + " = " + c.getContactId(),null);
                     if (result == 0)

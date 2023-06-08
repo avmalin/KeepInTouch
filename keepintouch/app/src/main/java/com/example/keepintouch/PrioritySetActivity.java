@@ -109,7 +109,7 @@ public class PrioritySetActivity extends AppCompatActivity {
                                     @Override
                                     public void onCheckedChanged(RadioGroup group, int checkedId) {
 
-                                        contactMap.put((long)group.getTag(R.id.tv_contact_id),new MyContact((long)group.getTag(R.id.tv_contact_id), PriorityType.valueOf(checkedId),(String)group.getTag(R.id.tv_number),(String)group.getTag(R.id.tv_name),(String)group.getTag(R.id.iv_image)));
+                                        contactMap.put((long)group.getTag(R.id.tv_contact_id),new MyContact((long)group.getTag(R.id.tv_contact_id), PriorityType.valueOf(checkedId),(String)group.getTag(R.id.tv_name),(String)group.getTag(R.id.iv_image)));
                                     }
                                 });
                             }
