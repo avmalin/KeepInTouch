@@ -49,7 +49,7 @@ public class PrioritySetActivity extends AppCompatActivity {
 
 
 
-        myContactTable = new MyContactTable(this);//TODO check if works
+        myContactTable = new MyContactTable(this);
         ListView listView = findViewById(R.id.listViewPriority);
 //        RadioGroup radioGroup = findViewById(R.id.rg_priority);
 

@@ -25,8 +25,9 @@ import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Map;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                     ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
             ||ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED)
             {
-                //TODO close the program
+                //TODO close the program if there isn't permission
             }
 //            else {
 //
@@ -121,14 +122,19 @@ public class MainActivity extends AppCompatActivity {
                 TextView tvNumber = convertView.findViewById(R.id.tv_number);
                 ImageView ivView = convertView.findViewById(R.id.iv_image);
                 TextView tvId = convertView.findViewById(R.id.tv_contact_id);
+
                 long date  = contact.getLastCall();
                 String lastDate = "";
+                 //TODO: convert miliscond into date
                 if (date > 0) {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
-                    lastDate = formatter.format(Instant.ofEpochMilli(date));
+                    Instant instant = Instant.ofEpochMilli(date);
+                    LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    lastDate = formatter.format(localDateTime);
                 }
+
                 tvName.setText(contact.getName());
-                tvNumber.setText(contact.getNumber());
+                tvNumber.setText(lastDate);
                 String photoUri = contact.getPhotoSrc();
                 if (photoUri != null) {
                     ivView.setImageURI(Uri.parse(photoUri));

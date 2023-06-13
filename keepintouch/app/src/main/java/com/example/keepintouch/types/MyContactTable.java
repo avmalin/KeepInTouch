@@ -114,11 +114,10 @@ public class MyContactTable extends SQLiteOpenHelper {
             if(cursor != null && cursor.moveToFirst())
             {
                 do {
-
                     list.add(new MyContact(
                             cursor.getInt(cursor.getColumnIndexOrThrow(CONTACT_ID_COL)),
                             PriorityType.fromInt(cursor.getInt(cursor.getColumnIndexOrThrow(PRIORITY_TYPE_COL))),
-                            cursor.getInt(cursor.getColumnIndexOrThrow(LAST_CALL_COL)),
+                            cursor.getLong(cursor.getColumnIndexOrThrow(LAST_CALL_COL)),
                             cursor.getString(cursor.getColumnIndexOrThrow(PHONE_COL)),
                             cursor.getString(cursor.getColumnIndexOrThrow(PHOTO_SRC_COL)),
                             cursor.getString(cursor.getColumnIndexOrThrow(NAME_COL))));
@@ -157,7 +156,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                     contactMap.put(cursor.getLong(cursor.getColumnIndexOrThrow(CONTACT_ID_COL)),new MyContact(
                             cursor.getLong(cursor.getColumnIndexOrThrow(CONTACT_ID_COL)),
                             PriorityType.fromInt(cursor.getInt(cursor.getColumnIndexOrThrow(PRIORITY_TYPE_COL))),
-                            cursor.getInt(cursor.getColumnIndexOrThrow(LAST_CALL_COL)),
+                            cursor.getLong(cursor.getColumnIndexOrThrow(LAST_CALL_COL)),
                             cursor.getString(cursor.getColumnIndexOrThrow(PHONE_COL)),
                             cursor.getString(cursor.getColumnIndexOrThrow(PHOTO_SRC_COL)),
                             cursor.getString(cursor.getColumnIndexOrThrow(NAME_COL))));
@@ -200,18 +199,29 @@ public class MyContactTable extends SQLiteOpenHelper {
     {
         ContentResolver contentResolver = sContext.getContentResolver();
         Cursor cursor = null;
+        long lastCall = 0;
+        String numbers = "";
         try{
             String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER};
             String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? " ;
             String[] selectionArgs = {String.valueOf(contact_id)};
-            //TODO: trying work's with contect uri filter,
-            cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, selection, selectionArgs,null);
 
+            cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, selection, selectionArgs,null); // getting all the contact's numbersif(cursor!=null && cursor.moveToFirst())
+            {
+                do {
+                    numbers += cursor.getString(0);
+                    numbers += ", ";
+                } while (cursor.moveToNext());
+                numbers = numbers.substring(0, numbers.length() - 2);//remove the last ", "
+            }
         }
         finally {
-
+            if (cursor != null)
+                cursor.close();
         }
-        return 0;
+        if (numbers != "")
+            lastCall = getLastCallById(numbers);
+        return lastCall;
     }
     private long getLastCallById(String contact_number) {
         ContentResolver contentResolver = sContext.getContentResolver();
@@ -220,10 +230,10 @@ public class MyContactTable extends SQLiteOpenHelper {
         String number = null;
         try {
             String[] projection = {CallLog.Calls.DATE};
-            String selection = ContactsContract.Contacts._ID + " = ?";
-            String[] selectionArgs = {contact_number};
+            String selection = ContactsContract.Contacts._ID + " IN (" +number+")" ;
+            String[] selectionArgs = null;
 
-            cursor = contentResolver.query(CallLog.Calls.CONTENT_URI, projection, selection, selectionArgs,CallLog.Calls.DATE + " DESC LIMIT 1");
+            cursor = contentResolver.query(CallLog.Calls.CONTENT_URI, projection, selection, selectionArgs,CallLog.Calls.DATE + " DESC");
 
             if (cursor != null && cursor.moveToFirst()) {
                 lastCallTime = cursor.getLong(cursor.getColumnIndexOrThrow(CallLog.Calls.DATE));
@@ -283,15 +293,15 @@ public class MyContactTable extends SQLiteOpenHelper {
             }
 
             // update LAST CALL
-            lastDateUpdate = 0;//TODO: delete me!
+            // get all the call from the last update and find relevant data.
             cursor = contentResolver.query(
                     CallLog.Calls.CONTENT_URI,
                     FROM_COLUMNS_CALL,
-                    CallLog.Calls.DATE + " > " + lastDateUpdate +
+                    CallLog.Calls.DATE + " > " + getLastDateUpdate() +
                     " AND type = " + CallLog.Calls.INCOMING_TYPE +
                     " OR type = " + CallLog.Calls.OUTGOING_TYPE,
                     null,
-                    CallLog.Calls.DATE + " DESC");
+                    CallLog.Calls.DATE + " ASC");
             if (cursor != null && cursor.moveToFirst())
             {
                 do {
@@ -299,7 +309,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                     if (contactMap.containsKey(contact_id))
                     {
                         MyContact c = contactMap.get(contact_id);
-                        c.setLastCall(cursor.getLong(1));
+                        c.setLastCall(cursor.getLong(1));//get last call
                         contactMap.put(contact_id,c);
                     }
                 }while (cursor.moveToNext());
@@ -310,7 +320,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                 cv = contactToVc(c);
                 contactDb.update(CONTACTS_TABLE_NAME,cv,CONTACT_ID_COL + " = " + c.getContactId(),null);
             }
-
+            setLastDateUpdate(System.currentTimeMillis()); // update the last update time to decrease processing time/
         }
         catch (SQLException e)
         {
@@ -326,6 +336,7 @@ public class MyContactTable extends SQLiteOpenHelper {
             cursor.close();
         }
         calculationPriority(context);
+        //TODO: what should be here????
         for (MyContact c:contactMap.values()) {
 
         }
