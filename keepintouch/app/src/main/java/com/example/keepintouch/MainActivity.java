@@ -102,9 +102,10 @@ public class MainActivity extends AppCompatActivity {
         listContact.sort(new Comparator<MyContact>() {
             @Override
             public int compare(MyContact o1, MyContact o2) {
-                long i;
-                i = (System.currentTimeMillis() - o1.getLastCall())/ o2.getPriorityType().compValue()-
-                        (System.currentTimeMillis() - o2.getLastCall())/ o1.getPriorityType().compValue();
+                long o1T,o2T, i;
+                o1T = System.currentTimeMillis() - o1.getLastCall();//calc how match time from last call of o1
+                o2T = System.currentTimeMillis() - o2.getLastCall();//calc how match time from last call of o2
+                i = o2T/o2.getPriorityType().compValue() - o1T/o1.getPriorityType().compValue();//oT div by mount of day according to priority
                 return (int)i;
             }});
 
@@ -122,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 TextView tvNumber = convertView.findViewById(R.id.tv_number);
                 ImageView ivView = convertView.findViewById(R.id.iv_image);
                 TextView tvId = convertView.findViewById(R.id.tv_contact_id);
+                TextView tvPriority = convertView.findViewById(R.id.tv_priority);
 
                 long date  = contact.getLastCall();
                 String lastDate = "";
@@ -140,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
                     ivView.setImageURI(Uri.parse(photoUri));
                 }
                 tvId.setText(String.valueOf(contact.getContactId()));
+                tvPriority.setText(contact.getPriorityType().toString());
                 return convertView;
             }
         };

@@ -4,65 +4,81 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layoutDirection="ltr">
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/contactItem">
-
-    <ImageView
-        android:id="@+id/iv_image"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:contentDescription="@string/profile_photo"
-        android:src="@drawable/ic_baseline_person_24"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/iv_image"
-        app:layout_constraintTop_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:id="@+id/contactItem"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <ImageView
+            android:id="@+id/iv_image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/profile_photo"
+            android:src="@drawable/ic_baseline_person_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@id/tv_priority"
+            app:layout_constraintStart_toEndOf="@id/iv_image"
+            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_contact_id"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/tv_name"
+            android:id="@+id/tv_priority"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:paddingEnd="5dp"
+            android:paddingStart="5dp"
+            android:textSize="14sp"
+            android:layout_gravity="bottom"/>
 
-        <TextView
-            android:id="@+id/tv_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/tv_contact_id"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
 
 
     </LinearLayout>
-</LinearLayout>
+
     <RadioGroup
-        app:layout_constraintTop_toBottomOf="@+id/contactItem"
-        android:orientation="horizontal"
-        android:visibility="gone"
         android:id="@+id/rg_priority1"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:paddingEnd="40dp">
+        android:orientation="horizontal"
+        android:paddingEnd="40dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/contactItem">
 
         <RadioButton
             android:id="@+id/rb_week"
@@ -73,27 +89,30 @@
 
         <RadioButton
             android:id="@+id/rb_month"
-            android:button="@drawable/ic_launcher_foreground"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_height="wrap_content"/>
+            android:button="@drawable/ic_launcher_foreground" />
+
         <RadioButton
             android:id="@+id/rb_half_year"
-            android:button="@drawable/ic_launcher_foreground"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_height="wrap_content"/>
+            android:button="@drawable/ic_launcher_foreground" />
+
         <RadioButton
             android:id="@+id/rb_year"
-            android:button="@drawable/ic_launcher_foreground"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_height="wrap_content"/>
+            android:button="@drawable/ic_launcher_foreground" />
+
         <RadioButton
             android:id="@+id/never"
-            android:button="@drawable/ic_launcher_foreground"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_height="wrap_content"/>
+            android:button="@drawable/ic_launcher_foreground" />
     </RadioGroup>
 </androidx.constraintlayout.widget.ConstraintLayout>
