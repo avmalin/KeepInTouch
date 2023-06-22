@@ -12,4 +12,8 @@
     <string name="profile_photo">profile photo</string>
     <string name="add_contacts_to_app">Add contacts to app</string>
     <string name="accept_button">Accept button</string>
+    <string name="back_button">back button</string>
+    <string name="accept_add">accept add</string>
+    <string name="cancel_change">cancle change</string>
+    <string name="resquest_permissions">Resquest Permissions</string>
 </resources>

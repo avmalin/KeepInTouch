@@ -16,18 +16,16 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/baseline_check_24"
-            android:contentDescription="@string/accept_button"
-            android:onClick="openPrioritySet"/>
+            app:srcCompat="@drawable/baseline_arrow_back_24"
+            android:contentDescription="@string/cancel_change" />
         <TextView
             android:id="@+id/tv_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:text="@string/add_contacts_to_app"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             app:layout_constraintEnd_toStartOf="@+id/imageButton"
-            app:layout_constraintStart_toSEndOf="@id/backButton"
+
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
@@ -37,8 +35,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/baseline_check_24"
-            android:contentDescription="@string/accept_button"
-            android:onClick="openPrioritySet"/>
+            android:contentDescription="@string/accept_add" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     <ListView

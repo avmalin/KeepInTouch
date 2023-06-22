@@ -19,7 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
@@ -29,11 +28,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-
+    public static final String[] PERMISSIONS= {
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.READ_CALL_LOG};
     /*
      * Defines an array that contains column names to move from
      * the Cursor to the ListView.
@@ -58,32 +58,25 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
+            if (!hasPermissions(PERMISSIONS))
+            {
+                Intent myIntent = new Intent(MainActivity.this, RequestPermissionsActivity.class);
+                startActivity(myIntent);
+
+            }
+
             super.onCreate(savedInstanceState);
             //myContactTable = new MyContactTable(this);
             setContentView(R.layout.contacts_list_view);
             myContactTable = new MyContactTable(this);
             // check permissions
-            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, 1);
-            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED)
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALL_LOG}, 1);
 
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-            ||ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED)
-            {
-                //TODO close the program if there isn't permission
-            }
-//            else {
-//
-//                //TODO view to edit contacts priority
-//                //TODO update the table after every flash
-//                //showContactActivity();
-//                //myContactTable.updateAllTable(this);
-//                //showMyContactActivity();
-//            }
+            //
+            //                //TODO view to edit contacts priority
+            //                //TODO update the table after every flash
+            //                //showContactActivity();
+            //                //myContactTable.updateAllTable(this);
+            //else showMyContactActivity();
 
 
     }
@@ -99,15 +92,13 @@ public class MainActivity extends AppCompatActivity {
        listContact = myContactTable.getContactList();
 
         //sort the contacts.
-        listContact.sort(new Comparator<MyContact>() {
-            @Override
-            public int compare(MyContact o1, MyContact o2) {
-                long o1T,o2T, i;
-                o1T = System.currentTimeMillis() - o1.getLastCall();//calc how match time from last call of o1
-                o2T = System.currentTimeMillis() - o2.getLastCall();//calc how match time from last call of o2
-                i = o2T/o2.getPriorityType().compValue() - o1T/o1.getPriorityType().compValue();//oT div by mount of day according to priority
-                return (int)i;
-            }});
+        listContact.sort((o1, o2) -> {
+            long o1T,o2T, i;
+            o1T = System.currentTimeMillis() - o1.getLastCall();//calc how match time from last call of o1
+            o2T = System.currentTimeMillis() - o2.getLastCall();//calc how match time from last call of o2
+            i = o2T/o2.getPriorityType().compValue() - o1T/o1.getPriorityType().compValue();//oT div by mount of day according to priority
+            return (int)i;
+        });
 
 
         //update the contacts
@@ -127,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
                 long date  = contact.getLastCall();
                 String lastDate = "";
-                 //TODO: convert miliscond into date
+                 //TODO: convert millisecond into date
                 if (date > 0) {
                     Instant instant = Instant.ofEpochMilli(date);
                     LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
@@ -154,7 +145,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        showMyContactActivity();
+        if (!hasPermissions(PERMISSIONS))
+            showMyContactActivity();
     }
 
 
@@ -163,6 +155,19 @@ public class MainActivity extends AppCompatActivity {
         Intent myIntent = new Intent(MainActivity.this, PrioritySetActivity.class);
         startActivity(myIntent);
     }
-
+    public boolean hasPermissions (String[] permissions)
+    {
+        if (permissions!= null)
+        {
+            for (String permission : permissions)
+            {
+                if (ActivityCompat.checkSelfPermission(this,permission) != PackageManager.PERMISSION_GRANTED)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
 }
