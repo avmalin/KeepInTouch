@@ -67,7 +67,11 @@ public class RequestPermissionsActivity extends AppCompatActivity {
         if (requestCode==1){
             if(grantResults.length>2 && grantResults[0]==PackageManager.PERMISSION_GRANTED
                     &&grantResults[1]==PackageManager.PERMISSION_GRANTED)
+            {
                 Toast.makeText(this,"Permissions Has Granted Successfully",Toast.LENGTH_LONG).show();
+                finish();
+            }
+
 
             else if (!ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[0])
             && !ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[01])) {

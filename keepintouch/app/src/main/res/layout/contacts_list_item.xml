@@ -74,45 +74,66 @@
     <RadioGroup
         android:id="@+id/rg_priority1"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingEnd="40dp"
         android:visibility="gone"
+        android:layout_marginTop="25dp"
+        android:paddingBottom="20dp"
         app:layout_constraintTop_toBottomOf="@+id/contactItem">
 
         <RadioButton
             android:id="@+id/rb_week"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:button="@drawable/ic_launcher_foreground" />
+            android:background="@drawable/ic_half_year"
+            android:button="@null"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:text="week"/>
 
         <RadioButton
             android:id="@+id/rb_month"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:button="@drawable/ic_launcher_foreground" />
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/ic_half_year"
+            android:textSize="20dp"
+            android:text="month" />
 
         <RadioButton
             android:id="@+id/rb_half_year"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
+            android:gravity="center"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:button="@drawable/ic_launcher_foreground" />
+            android:text="half year"
+            android:background="@drawable/ic_half_year"
+            android:textSize="20dp"
+            android:button="@null" />
 
         <RadioButton
             android:id="@+id/rb_year"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:button="@drawable/ic_launcher_foreground" />
+            android:text="year"
+            android:gravity="center"
+            android:background="@drawable/ic_half_year"
+            android:textSize="20dp"
+            android:button="@null"/>
 
         <RadioButton
             android:id="@+id/never"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:button="@drawable/ic_launcher_foreground" />
+            android:gravity="center"
+            android:background="@drawable/ic_half_year"
+            android:text="never"
+            android:textSize="20dp"
+            android:button="@null" />
     </RadioGroup>
 </androidx.constraintlayout.widget.ConstraintLayout>

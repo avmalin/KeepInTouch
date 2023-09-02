@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.example.keepintouch.types.CalculationContactsTask;
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
 
@@ -50,34 +51,23 @@ public class MainActivity extends AppCompatActivity {
             R.id.iv_image,
             R.id.tv_contact_id
         };
-        ListView contactsList;
-        private SimpleCursorAdapter cursorAdapter;
-        private ArrayAdapter<MyContact> adapter = null;
-        private MyContactTable myContactTable;
-        private Map<Integer,MyContact> contactMap;
+    ListView contactsList;
+    private SimpleCursorAdapter cursorAdapter;
+    private ArrayAdapter<MyContact> adapter = null;
+    private MyContactTable myContactTable;
+    private Map<Integer,MyContact> contactMap;
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            if (!hasPermissions(PERMISSIONS))
-            {
-                Intent myIntent = new Intent(MainActivity.this, RequestPermissionsActivity.class);
-                startActivity(myIntent);
-
-            }
-
-            super.onCreate(savedInstanceState);
-            //myContactTable = new MyContactTable(this);
-            setContentView(R.layout.contacts_list_view);
-            myContactTable = new MyContactTable(this);
-            // check permissions
-
-            //
-            //                //TODO view to edit contacts priority
-            //                //TODO update the table after every flash
-            //                //showContactActivity();
-            //                //myContactTable.updateAllTable(this);
-            //else showMyContactActivity();
-
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        if (!hasPermissions(PERMISSIONS))
+        {
+            Intent myIntent = new Intent(MainActivity.this, RequestPermissionsActivity.class);
+            startActivity(myIntent);
+        }
+        super.onCreate(savedInstanceState);
+        //myContactTable = new MyContactTable(this);
+        setContentView(R.layout.contacts_list_view);
+        myContactTable = new MyContactTable(this);
 
     }
 
@@ -86,9 +76,6 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<MyContact> listContact;
        // Map<Integer,MyContact> contactMap = null;
 
-
-        //update last call
-        myContactTable.updateAllTable(this);
        listContact = myContactTable.getContactList();
 
         //sort the contacts.
@@ -139,14 +126,20 @@ public class MainActivity extends AppCompatActivity {
         };
         contactsList.setAdapter(adapter);
 
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (!hasPermissions(PERMISSIONS))
+        if (hasPermissions(PERMISSIONS))
+        {
             showMyContactActivity();
+            //init AsyncTask for updating the table
+            CalculationContactsTask asyncTask = new CalculationContactsTask(this,findViewById(R.id.listView));
+            asyncTask.execute(myContactTable);
+
+
+        }
     }
 
 

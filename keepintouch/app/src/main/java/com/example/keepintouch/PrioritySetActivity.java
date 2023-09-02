@@ -4,11 +4,15 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioGroup;
@@ -45,17 +49,45 @@ public class PrioritySetActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_priority_set);
-
+        setContentView(R.layout.contact_list_add);
 
 
         myContactTable = new MyContactTable(this);
-        ListView listView = findViewById(R.id.listViewPriority);
-//        RadioGroup radioGroup = findViewById(R.id.rg_priority);
 
+        //init  element
+        ImageButton ib_accept = findViewById(R.id.ib_accept);
+        EditText et_search = findViewById(R.id.et_search);
 
+        //imp listener
+        ib_accept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myContactTable.updateTableFromMap(contactMap);
+                finish();
+            }
+        });
+        et_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String query = s.toString().trim();
+                performSearch(query);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        //--handle click on listview to view priority options.
+        ListView listView = findViewById(R.id.listViewContacts);
         //init
-        contactPriority=null;
+        contactPriority = null;
         contactMap = new HashMap<>();
 
         //define on-click item
@@ -67,10 +99,22 @@ public class PrioritySetActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void performSearch(String searchString){
+        ListView listView = findViewById(R.id.listViewContacts);
+
         Uri uri = ContactsContract.Contacts.CONTENT_URI;
+        if (!searchString.equals(""))
+            uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_FILTER_URI,Uri.encode(searchString));
         String sort =  ContactsContract.Contacts.DISPLAY_NAME + " ASC";
         try  {
-            cursor = getContentResolver().query(uri, null, ContactsContract.Contacts.HAS_PHONE_NUMBER + " != 0", null, sort);
+            cursor = getContentResolver().query(
+                    uri,
+                    null,
+                    ContactsContract.Contacts.HAS_PHONE_NUMBER + " != 0",
+                    null,
+                    sort);
             cursorAdapter =
                     new SimpleCursorAdapter(
                             this,
@@ -86,7 +130,7 @@ public class PrioritySetActivity extends AppCompatActivity {
                             }
                             Cursor cursor = getCursor();
                             cursor.moveToPosition(position);
-                            ListView listView = findViewById(R.id.listViewPriority);
+                            ListView listView = findViewById(R.id.listViewContacts);
 
                             //get the index of the data in the cursor.
                             int nameIndex = cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME);
@@ -127,7 +171,7 @@ public class PrioritySetActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        myContactTable.updateTableFromMap(contactMap);
+        //myContactTable.updateTableFromMap(contactMap);
         super.onPause();
     }
 
