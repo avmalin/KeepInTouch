@@ -56,13 +56,19 @@ public class PrioritySetActivity extends AppCompatActivity {
 
         //init  element
         ImageButton ib_accept = findViewById(R.id.ib_accept);
+        ImageButton ib_back = findViewById(R.id.ib_back);
         EditText et_search = findViewById(R.id.et_search);
-
         //imp listener
         ib_accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 myContactTable.updateTableFromMap(contactMap);
+                finish();
+            }
+        });
+        ib_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 finish();
             }
         });
