@@ -1,6 +1,7 @@
 package com.example.keepintouch.types;
 
 import android.content.Context;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
@@ -25,10 +26,13 @@ import java.util.ArrayList;
 public class CalculationContactsTask extends AsyncTask<MyContactTable,Integer,MyContactTable> {
     private Context mContext;
     private ListView mContactsList;
-    public CalculationContactsTask(Context context, ListView contactsList)
+    private ImageView mImageLoading;
+    private AnimationDrawable animationLoading;
+    public CalculationContactsTask(Context context, ListView contactsList, ImageView imageLoading)
     {
         mContext=context;
         mContactsList =contactsList;
+        mImageLoading = imageLoading;
 
     }
 
@@ -39,13 +43,19 @@ public class CalculationContactsTask extends AsyncTask<MyContactTable,Integer,My
     }
 
     @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        //start animation loading
+        mImageLoading.setVisibility(View.VISIBLE);
+        animationLoading = (AnimationDrawable) mImageLoading.getDrawable();
+        animationLoading.start();
+    }
+
+    @Override
     protected void onPostExecute(MyContactTable myContactTable) {
         super.onPostExecute(myContactTable);
-
-
             ArrayList<MyContact> listContact;
             // Map<Integer,MyContact> contactMap = null;
-
             listContact = myContactTable.getContactList();
 
             //sort the contacts.
@@ -95,5 +105,8 @@ public class CalculationContactsTask extends AsyncTask<MyContactTable,Integer,My
                 }
             };
             mContactsList.setAdapter(adapter);
+            //stop animation loading and invisible
+            animationLoading.stop();
+            mImageLoading.setVisibility(View.INVISIBLE);
     }
 }

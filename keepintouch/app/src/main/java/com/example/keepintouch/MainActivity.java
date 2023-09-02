@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         {
             showMyContactActivity();
             //init AsyncTask for updating the table
-            CalculationContactsTask asyncTask = new CalculationContactsTask(this,findViewById(R.id.listView));
+            CalculationContactsTask asyncTask = new CalculationContactsTask(this,findViewById(R.id.listView), findViewById(R.id.iv_loading));
             asyncTask.execute(myContactTable);
 
 
