@@ -1,11 +1,17 @@
 package com.example.keepintouch;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,17 +31,14 @@ import com.example.keepintouch.types.CalculationContactsTask;
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     public static final String[] PERMISSIONS= {
             Manifest.permission.READ_CONTACTS,
-            Manifest.permission.READ_CALL_LOG};
+            Manifest.permission.READ_CALL_LOG,
+            Manifest.permission.CALL_PHONE};
     /*
      * Defines an array that contains column names to move from
      * the Cursor to the ListView.
@@ -56,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<MyContact> adapter = null;
     private MyContactTable myContactTable;
     private Map<Integer,MyContact> contactMap;
+    private AnimationDrawable animationLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void showMyContactActivity() {
+    public void showMyContactActivity() {
         contactsList = findViewById(R.id.listView);
         ArrayList<MyContact> listContact;
        // Map<Integer,MyContact> contactMap = null;
@@ -105,16 +110,23 @@ public class MainActivity extends AppCompatActivity {
 
                 long date  = contact.getLastCall();
                 String lastDate = "";
-                 //TODO: convert millisecond into date
                 if (date > 0) {
-                    Instant instant = Instant.ofEpochMilli(date);
-                    LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    lastDate = formatter.format(localDateTime);
+                   long currentDay = System.currentTimeMillis();
+                   long days = (currentDay - date)/(1000*60*60*24);// 1 day = 24 hours = 24 * 60 * 60 * 1000 milliseconds
+                   lastDate = days + " days";
+                   if(days >  contact.getPriorityType().compValue())
+                       tvNumber.setTextColor(Color.RED);
+                }
+                else if (date==0)
+                {
+                    lastDate = "∞";
+                    tvNumber.setTextColor(Color.RED);
+                    tvNumber.setTextSize(24);
                 }
 
                 tvName.setText(contact.getName());
                 tvNumber.setText(lastDate);
+
                 String photoUri = contact.getPhotoSrc();
                 if (photoUri != null) {
                     ivView.setImageURI(Uri.parse(photoUri));
@@ -124,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 return convertView;
             }
         };
+        contactsList.setOnItemClickListener((parent, view, position, id) -> callingByID(listContact.get(position).getContactId()));
         contactsList.setAdapter(adapter);
 
     }
@@ -135,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
         {
             showMyContactActivity();
             //init AsyncTask for updating the table
-            CalculationContactsTask asyncTask = new CalculationContactsTask(this,findViewById(R.id.listView), findViewById(R.id.iv_loading));
+            CalculationContactsTask asyncTask = new CalculationContactsTask(this);
             asyncTask.execute(myContactTable);
 
 
@@ -163,4 +176,45 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    public void callingByID(long contact_id){
+        Cursor cursor=null;
+        try {
+            ContentResolver contentResolver = this.getContentResolver();
+            String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER};
+            String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? ";
+            String[] selectionArgs = {String.valueOf(contact_id)};
+
+            cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                int phoneNumberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                String phoneNumber = cursor.getString(phoneNumberIndex);
+                cursor.close();
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + phoneNumber));
+                startActivity(intent);
+            }
+            else
+                Toast.makeText(getApplicationContext(), "cant find phone number", Toast.LENGTH_SHORT).show();
+
+        }
+        catch (SQLException e) {
+            Log.e("DatabaseError", "Error accessing database searching number", e);
+        }
+        finally {
+            if (cursor!=null && !cursor.isClosed())
+                cursor.close();
+        }
+    }
+    public void startLoading(){
+        ImageView imageLoading =  findViewById(R.id.iv_loading);
+        imageLoading.setVisibility(View.VISIBLE);
+        animationLoading = (AnimationDrawable) imageLoading.getDrawable();
+        animationLoading.start();
+    }
+    public void stopLoading(){
+        animationLoading.stop();
+        ImageView imageLoading =findViewById(R.id.iv_loading);
+        imageLoading.setVisibility(View.INVISIBLE);
+    }
 }
+

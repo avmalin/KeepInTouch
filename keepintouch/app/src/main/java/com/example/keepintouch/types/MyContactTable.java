@@ -55,7 +55,7 @@ public class MyContactTable extends SQLiteOpenHelper {
     private static final String[] FROM_COLUMNS_CALL = {CallLog.Calls.NUMBER, CallLog.Calls.DATE};
 
 
-    public static Context sContext;
+    public  Context sContext;
 
 
     // TODO  constructor, update functions.
@@ -184,11 +184,11 @@ public class MyContactTable extends SQLiteOpenHelper {
         long lastCall = 0;
         String numbers = "";
         try {
-            String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER};
-            String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? ";
-            String[] selectionArgs = {String.valueOf(contact_id)};
+                String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER};
+                String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? ";
+                String[] selectionArgs = {String.valueOf(contact_id)};
 
-            cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, selection, selectionArgs, null); // getting all the contact's numbersif(cursor!=null && cursor.moveToFirst())
+                cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, selection, selectionArgs, null); // getting all the contact's numbers if(cursor!=null && cursor.moveToFirst())
             {
                 if (cursor != null && cursor.moveToFirst()) {
                     do {
@@ -206,7 +206,7 @@ public class MyContactTable extends SQLiteOpenHelper {
             if (cursor != null)
                 cursor.close();
         }
-        if (numbers != "")
+        if (numbers.compareTo( "")!=0)
             lastCall = getLastCallById(numbers);
         return lastCall;
     }
@@ -263,8 +263,9 @@ public class MyContactTable extends SQLiteOpenHelper {
                     null,
                     null,
                     null);
-
+            //updates names and images 
             if (cursor != null && cursor.moveToFirst()) {
+                //getting index to cursor
                 int nameIndex = cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME);
                 int photoIndex = cursor.getColumnIndexOrThrow(ContactsContract.Contacts.PHOTO_URI);
                 int idIndex = cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID);
@@ -279,15 +280,13 @@ public class MyContactTable extends SQLiteOpenHelper {
             }
 
             // update LAST CALL
-
             // get all the call from the last update and find relevant data.
-
             cursor = contentResolver.query(
                     CallLog.Calls.CONTENT_URI,
                     FROM_COLUMNS_CALL,
                     CallLog.Calls.DATE + " > " + lastUpdate +
-                            " AND type = " + CallLog.Calls.INCOMING_TYPE +
-                            " OR type = " + CallLog.Calls.OUTGOING_TYPE,
+                            " AND (type = " + CallLog.Calls.INCOMING_TYPE +
+                            " OR type = " + CallLog.Calls.OUTGOING_TYPE+")",
                     null,
                     CallLog.Calls.DATE + " ASC");
             if (cursor != null && cursor.moveToFirst()) {
@@ -318,12 +317,6 @@ public class MyContactTable extends SQLiteOpenHelper {
             }
             cursor.close();
         }
-        calculationPriority(context);
-        //TODO: what should be here????
-        for (MyContact c : contactMap.values()) {
-
-        }
-
     }
 
     private void calculationPriority(Context context) {

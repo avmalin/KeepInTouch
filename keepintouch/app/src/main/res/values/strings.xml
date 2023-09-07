@@ -5,7 +5,7 @@
     <string name="once_a_month">Once a month</string>
     <string name="once_every_six_month">Once every six month</string>
     <string name="once_a_year">Once a year</string>
-    <string name="never">NEVER</string>
+    <string name="never">never</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="set_priority">set priority</string>
@@ -16,4 +16,8 @@
     <string name="accept_add">accept add</string>
     <string name="cancel_change">cancle change</string>
     <string name="resquest_permissions">Resquest Permissions</string>
+    <string name="year">year</string>
+    <string name="half_year">half year</string>
+    <string name="month">month</string>
+    <string name="week">week</string>
 </resources>

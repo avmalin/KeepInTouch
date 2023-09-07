@@ -9,7 +9,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -59,19 +58,11 @@ public class PrioritySetActivity extends AppCompatActivity {
         ImageButton ib_back = findViewById(R.id.ib_back);
         EditText et_search = findViewById(R.id.et_search);
         //imp listener
-        ib_accept.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myContactTable.updateTableFromMap(contactMap);
-                finish();
-            }
+        ib_accept.setOnClickListener(v -> {
+            myContactTable.updateTableFromMap(contactMap);
+            finish();
         });
-        ib_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        ib_back.setOnClickListener(v -> finish());
         et_search.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -97,13 +88,10 @@ public class PrioritySetActivity extends AppCompatActivity {
         contactMap = new HashMap<>();
 
         //define on-click item
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectedItem = position;
-                cursorAdapter.notifyDataSetChanged();
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            selectedItem = position;
+            cursorAdapter.notifyDataSetChanged();
 
-            }
         });
     }
 
@@ -155,13 +143,9 @@ public class PrioritySetActivity extends AppCompatActivity {
                                 RadioGroup radioGroup = convertView.findViewById(R.id.rg_priority1);
                                 radioGroup.setVisibility(View.VISIBLE);
                                 radioGroup.setTag(R.id.tv_contact_id,cursor.getLong(idIndex));
-                                radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                                    @Override
-                                    public void onCheckedChanged(RadioGroup group, int checkedId) {
-
-                                        contactMap.put((long)group.getTag(R.id.tv_contact_id),new MyContact((long)group.getTag(R.id.tv_contact_id), PriorityType.valueOf(checkedId),(String)group.getTag(R.id.tv_name),(String)group.getTag(R.id.iv_image)));
-                                    }
-                                });
+                                radioGroup.setTag(R.id.tv_name, cursor.getString(nameIndex));
+                                radioGroup.setTag(R.id.iv_image, cursor.getString(photoIndex));
+                                radioGroup.setOnCheckedChangeListener((group, checkedId) -> contactMap.put((long)group.getTag(R.id.tv_contact_id),new MyContact((long)group.getTag(R.id.tv_contact_id), PriorityType.valueOf(checkedId),(String)group.getTag(R.id.tv_name),(String)group.getTag(R.id.iv_image))));
                             }
                             else convertView.findViewById(R.id.rg_priority1).setVisibility(View.GONE);
                             return convertView;

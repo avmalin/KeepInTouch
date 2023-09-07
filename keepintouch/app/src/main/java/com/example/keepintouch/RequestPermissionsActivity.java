@@ -1,6 +1,5 @@
 package com.example.keepintouch;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -29,7 +28,8 @@ public class RequestPermissionsActivity extends AppCompatActivity {
         if(!hasPermissions(MainActivity.PERMISSIONS))
         {
             if(ActivityCompat.shouldShowRequestPermissionRationale(this, MainActivity.PERMISSIONS[0])||
-                    ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[1]))
+                    ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[1]) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[2]))
             {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage("This message request permission to contacts, call log and external storage to work as excepted.")
@@ -74,22 +74,20 @@ public class RequestPermissionsActivity extends AppCompatActivity {
 
 
             else if (!ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[0])
-            && !ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[01])) {
+            && !ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[1])&&
+                    !ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[2])) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage("The application in unavailable because this Application required permissions that you have denied." +
                                 "Please allow Read-Contact, Read-Call-log and Read-External-Storage to continue.")
                         .setTitle("Permission Required")
                         .setCancelable(false)
                         .setNegativeButton("Cancel", ((dialog, which) -> dialog.dismiss()))
-                        .setPositiveButton("Setting", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                                intent.setData(uri);
-                                startActivity(intent);
-                                dialog.dismiss();
-                            }
+                        .setPositiveButton("Setting", (dialog, which) -> {
+                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            Uri uri = Uri.fromParts("package", getPackageName(), null);
+                            intent.setData(uri);
+                            startActivity(intent);
+                            dialog.dismiss();
                         });
                 builder.show();
 

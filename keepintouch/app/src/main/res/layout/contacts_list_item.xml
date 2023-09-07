@@ -89,8 +89,9 @@
             android:background="@drawable/ic_half_year"
             android:button="@null"
             android:gravity="center"
-            android:textSize="20dp"
-            android:text="week"/>
+            android:layout_marginHorizontal="2dp"
+            android:textSize="20sp"
+            android:text="@string/week"/>
 
         <RadioButton
             android:id="@+id/rb_month"
@@ -100,18 +101,20 @@
             android:button="@null"
             android:gravity="center"
             android:background="@drawable/ic_half_year"
-            android:textSize="20dp"
-            android:text="month" />
+            android:textSize="20sp"
+            android:layout_marginHorizontal="2dp"
+            android:text="@string/month" />
 
         <RadioButton
             android:id="@+id/rb_half_year"
+            android:layout_marginHorizontal="2dp"
             android:layout_width="wrap_content"
             android:gravity="center"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="half year"
+            android:text="@string/half_year"
             android:background="@drawable/ic_half_year"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:button="@null" />
 
         <RadioButton
@@ -119,21 +122,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="year"
+            android:text="@string/year"
             android:gravity="center"
+            android:layout_marginHorizontal="2dp"
             android:background="@drawable/ic_half_year"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:button="@null"/>
 
         <RadioButton
             android:id="@+id/never"
+            android:layout_marginHorizontal="2dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
             android:background="@drawable/ic_half_year"
-            android:text="never"
-            android:textSize="20dp"
+            android:text="@string/never"
+            android:textSize="20sp"
             android:button="@null" />
     </RadioGroup>
 </androidx.constraintlayout.widget.ConstraintLayout>
