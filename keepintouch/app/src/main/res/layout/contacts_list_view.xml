@@ -8,34 +8,38 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ll_header"
         android:layout_width="match_parent"
-        android:layout_height="80dp">
+        android:layout_height="70dp"
+        android:background="@color/colorPrimary"
+        android:layoutDirection="ltr">
 
 
         <TextView
             android:id="@+id/tv_header"
             android:layout_width="0dp"
-            android:layout_height="59dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-
             android:layout_marginTop="16dp"
-            android:text="@string/app_header"
+            android:fontFamily="@font/noto_sans"
 
+            android:text="@string/app_header"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#FFFFFF"
             android:textSize="26dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/imageButton"
             android:layout_width="48dp"
             android:layout_height="42dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="18dp"
             android:contentDescription="@string/set_priority"
             android:onClick="openPrioritySet"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.955"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/baseline_person_add_alt_1_24" />
+            android:src="@drawable/baseline_person_add_alt_1_24" />
 
         <ImageView
             android:id="@+id/iv_loading"

@@ -58,8 +58,7 @@ public class MyContactTable extends SQLiteOpenHelper {
     public  Context sContext;
 
 
-    // TODO  constructor, update functions.
-    //TODO  update the table if contact if is delete.
+
     public MyContactTable(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         sContext = context;
@@ -226,7 +225,7 @@ public class MyContactTable extends SQLiteOpenHelper {
             if (cursor != null && cursor.moveToFirst()) {
                 lastCallTime = cursor.getLong(cursor.getColumnIndexOrThrow(CallLog.Calls.DATE));
                 // Do something with the last call time, e.g. display it in a TextView
-            }//todo: fix get last date.
+            }
 
         } catch (SQLException e) {
             Log.e("DatabaseError", "Error accessing database", e);
@@ -243,8 +242,6 @@ public class MyContactTable extends SQLiteOpenHelper {
 
     /**
      * this function update all contact details and the last call.
-     * TODO handle delete contacts.
-     * TODO smart update by last update time.
      */
     public void updateAllTable(Context context) {
         ContentResolver contentResolver = context.getContentResolver();
@@ -319,9 +316,7 @@ public class MyContactTable extends SQLiteOpenHelper {
         }
     }
 
-    private void calculationPriority(Context context) {
 
-    }
 
     public void addContact(List<MyContact> myContacts) {
         SQLiteDatabase db = this.getWritableDatabase();

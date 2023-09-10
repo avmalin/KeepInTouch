@@ -1,6 +1,7 @@
 package com.example.keepintouch;
 
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -9,27 +10,33 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
 import com.example.keepintouch.types.PriorityType;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class PrioritySetActivity extends AppCompatActivity {
 
     CursorAdapter cursorAdapter = null;
+    ArrayAdapter<MyContact>  arrayAdapter=null;
     Cursor cursor= null;
+    ArrayList<MyContact> listContact;
     int selectedItem = -1;
     MyContactTable myContactTable;
     View contactPriority;
@@ -45,6 +52,7 @@ public class PrioritySetActivity extends AppCompatActivity {
             R.id.iv_image,
             R.id.tv_contact_id
     };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,10 +60,12 @@ public class PrioritySetActivity extends AppCompatActivity {
 
 
         myContactTable = new MyContactTable(this);
+        listContact = myContactTable.getContactList();
+        listContact.sort(Comparator.comparing(MyContact::getName));
 
         //init  element
-        ImageButton ib_accept = findViewById(R.id.ib_accept);
-        ImageButton ib_back = findViewById(R.id.ib_back);
+        ImageView ib_accept = findViewById(R.id.ib_accept);
+        ImageView ib_back = findViewById(R.id.ib_back);
         EditText et_search = findViewById(R.id.et_search);
         //imp listener
         ib_accept.setOnClickListener(v -> {
@@ -81,6 +91,7 @@ public class PrioritySetActivity extends AppCompatActivity {
             }
         });
 
+
         //--handle click on listview to view priority options.
         ListView listView = findViewById(R.id.listViewContacts);
         //init
@@ -90,26 +101,30 @@ public class PrioritySetActivity extends AppCompatActivity {
         //define on-click item
         listView.setOnItemClickListener((parent, view, position, id) -> {
             selectedItem = position;
-            cursorAdapter.notifyDataSetChanged();
+            if (cursorAdapter!=null)
+                cursorAdapter.notifyDataSetChanged();
+            if(arrayAdapter!=null)
+                arrayAdapter.notifyDataSetChanged();
+
 
         });
+        performSearch("");
     }
 
     public void performSearch(String searchString){
         ListView listView = findViewById(R.id.listViewContacts);
 
-        Uri uri = ContactsContract.Contacts.CONTENT_URI;
-        if (!searchString.equals(""))
-            uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_FILTER_URI,Uri.encode(searchString));
-        String sort =  ContactsContract.Contacts.DISPLAY_NAME + " ASC";
-        try  {
-            cursor = getContentResolver().query(
-                    uri,
-                    null,
-                    ContactsContract.Contacts.HAS_PHONE_NUMBER + " != 0",
-                    null,
-                    sort);
-            cursorAdapter =
+        if (!searchString.equals("")) {
+            try  {
+                Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_FILTER_URI,Uri.encode(searchString));
+                String sort =  ContactsContract.Contacts.DISPLAY_NAME + " ASC";
+                cursor = getContentResolver().query(
+                        uri,
+                        null,
+                        ContactsContract.Contacts.HAS_PHONE_NUMBER + " != 0",
+                        null,
+                        sort);
+                cursorAdapter =
                     new SimpleCursorAdapter(
                             this,
                             R.layout.contacts_list_item,
@@ -145,16 +160,84 @@ public class PrioritySetActivity extends AppCompatActivity {
                                 radioGroup.setTag(R.id.tv_contact_id,cursor.getLong(idIndex));
                                 radioGroup.setTag(R.id.tv_name, cursor.getString(nameIndex));
                                 radioGroup.setTag(R.id.iv_image, cursor.getString(photoIndex));
-                                radioGroup.setOnCheckedChangeListener((group, checkedId) -> contactMap.put((long)group.getTag(R.id.tv_contact_id),new MyContact((long)group.getTag(R.id.tv_contact_id), PriorityType.valueOf(checkedId),(String)group.getTag(R.id.tv_name),(String)group.getTag(R.id.iv_image))));
+                                radioGroup.setOnCheckedChangeListener((group, checkedId) ->
+                                {
+                                    contactMap.put(
+                                                (long)group.getTag(R.id.tv_contact_id),
+                                                new MyContact((long)group.getTag(R.id.tv_contact_id),
+                                                        PriorityType.valueOf(checkedId),(String)group.getTag(R.id.tv_name),
+                                                        (String)group.getTag(R.id.iv_image)));
+                                    for (MyContact c:listContact){
+                                        if (c.getContactId() == (long)group.getTag(R.id.tv_contact_id))
+                                        {
+                                            c.setNumber("-1");
+                                            break;
+                                        }
+                                        notifyDataSetChanged();
+                                    }
+                                });
                             }
                             else convertView.findViewById(R.id.rg_priority1).setVisibility(View.GONE);
                             return convertView;
                         }
                     };
-            listView.setAdapter(cursorAdapter);
+                listView.setAdapter(cursorAdapter);
+            }
+            catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+        else {
+            arrayAdapter =
+                    new ArrayAdapter<MyContact>(this,R.layout.contacts_list_item,listContact){
+                        @NonNull
+                        @Override
+                        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                            if (convertView == null) {//init the listview
+                                convertView = LayoutInflater.from(getContext()).inflate(R.layout.contacts_list_item, parent, false);
+                            }
+                            //inits
+                            TextView tvName = convertView.findViewById(R.id.tv_name);
+                            ImageView ivView = convertView.findViewById(R.id.iv_image);
+                            TextView tvId = convertView.findViewById(R.id.tv_contact_id);
+                            TextView tvPriority = convertView.findViewById(R.id.tv_priority);
+                            MyContact contact = getItem(position);
+                            //sets views
+                            tvName.setText(contact.getName());
+                            tvId.setText(String.valueOf(contact.getContactId()));
+                            String photoUri = contact.getPhotoSrc();
+                            if (photoUri != null)
+                                ivView.setImageURI(Uri.parse(photoUri));
+                            tvPriority.setText(contact.getPriorityType().toString());
+                            if (contact.getName().equals("-1"))
+                                tvName.setTextColor(Color.RED);
+                            //set checkboxes to visible to only selected  item
+                            if (position == selectedItem)
+                            {
+                                RadioGroup radioGroup = convertView.findViewById(R.id.rg_priority1);
+                                radioGroup.setVisibility(View.VISIBLE);
+                                radioGroup.setTag(R.id.tv_contact_id,contact.getContactId());
+                                radioGroup.setTag(R.id.tv_name, contact.getName());
+                                radioGroup.setTag(R.id.iv_image, contact.getPhotoSrc());
+                                radioGroup.setOnCheckedChangeListener((group, checkedId) ->
+                                {contactMap.put(
+                                            (long) group.getTag(R.id.tv_contact_id),
+                                            new MyContact((long) group.getTag(R.id.tv_contact_id),
+                                                    PriorityType.valueOf(checkedId),
+                                                    (String) group.getTag(R.id.tv_name),
+                                                    (String) group.getTag(R.id.iv_image)));
+                                    listContact.get(position).setNumber("-1");
+                                    notifyDataSetChanged();
+                                });
 
-        } catch (Exception e) {
-            System.out.println(e);
+                            }
+                            else convertView.findViewById(R.id.rg_priority1).setVisibility(View.GONE);
+
+                            return convertView;
+
+                        }
+                    };
+            listView.setAdapter(arrayAdapter);
         }
     }
 

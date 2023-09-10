@@ -1,7 +1,5 @@
 package com.example.keepintouch.types;
 
-import android.provider.ContactsContract;
-
 import java.util.Date;
 
 public class MyContact {
@@ -87,14 +85,7 @@ public class MyContact {
         mContactId = id;
         mPriorityType = type;
     }
-//TODO: update constructor ContactsContract.contacts
-// TODO: support few phone number to the same contacts,
-    public MyContact(ContactsContract.Contacts contacts) {
-        mName=null;
-        mNumber=null;
-        mBirthday = null;
-        mPhotoSrc = null;
-    }
+
 
     public Date getLastUpdate() {
         return lastUpdate;
@@ -109,7 +100,6 @@ public class MyContact {
     }
 
     public String getNumber() {
-        //TODO: if number is null update number.
         return mNumber;
 
     }
