@@ -209,12 +209,16 @@ public class PrioritySetActivity extends AppCompatActivity {
                             if (photoUri != null)
                                 ivView.setImageURI(Uri.parse(photoUri));
                             tvPriority.setText(contact.getPriorityType().toString());
-                            if (contact.getName().equals("-1"))
+                            if (contact.getNumber()!=null && contact.getNumber().equals("-1"))
                                 tvName.setTextColor(Color.RED);
+                            else tvName.setTextColor(Color.GRAY);
                             //set checkboxes to visible to only selected  item
                             if (position == selectedItem)
                             {
                                 RadioGroup radioGroup = convertView.findViewById(R.id.rg_priority1);
+                                //set the current priority if not change
+                                if (contact.getNumber()==null || (contact.getNumber()!=null && !contact.getNumber().equals("-1")))
+                                    radioGroup.check(getItem(position).getPriorityType().idOf());
                                 radioGroup.setVisibility(View.VISIBLE);
                                 radioGroup.setTag(R.id.tv_contact_id,contact.getContactId());
                                 radioGroup.setTag(R.id.tv_name, contact.getName());
@@ -226,7 +230,11 @@ public class PrioritySetActivity extends AppCompatActivity {
                                                     PriorityType.valueOf(checkedId),
                                                     (String) group.getTag(R.id.tv_name),
                                                     (String) group.getTag(R.id.iv_image)));
-                                    listContact.get(position).setNumber("-1");
+                                    getItem(position).setNumber("-1");
+                                    if (getItem(position).getPriorityType().idOf() == checkedId) {
+                                        getItem(position).setNumber("0");//clear the red text
+                                        //arrayAdapter.notifyDataSetChanged();
+                                    }
                                     notifyDataSetChanged();
                                 });
 

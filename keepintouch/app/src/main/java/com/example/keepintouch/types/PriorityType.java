@@ -37,6 +37,20 @@ public enum PriorityType {
                 return NEVER;
         }
     }
+    public int idOf(){
+        switch (this){
+            case WEEKLY:
+                return R.id.rb_week;
+            case MONTHLY:
+                return R.id.rb_month;
+            case HALF_YEAR:
+                return R.id.rb_half_year;
+            case YEARLY:
+                return R.id.rb_year;
+            default:
+                return R.id.never;
+        }
+    }
     public int compValue() {
         switch (this) {
             case WEEKLY:
