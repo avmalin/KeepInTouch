@@ -54,6 +54,11 @@ public class MyContactTable extends SQLiteOpenHelper {
 
     private static final String[] FROM_COLUMNS_CALL = {CallLog.Calls.NUMBER, CallLog.Calls.DATE};
 
+    private static final String IS_ANSWERED_CALL =
+            "( "+ CallLog.Calls.TYPE+ " = " + CallLog.Calls.INCOMING_TYPE +
+                    " OR "+ CallLog.Calls.TYPE + " = " + CallLog.Calls.OUTGOING_TYPE+")" +
+                    " AND " +CallLog.Calls.DURATION+ " IS NOT NULL" +
+                    " AND " +CallLog.Calls.DURATION  +" != 0";
 
     public  Context sContext;
 
@@ -217,7 +222,8 @@ public class MyContactTable extends SQLiteOpenHelper {
 
         try {
             String[] projection = {CallLog.Calls.DATE};
-            String selection = CallLog.Calls.NUMBER + " IN (" + contact_number + ")";
+            String selection = CallLog.Calls.NUMBER + " IN (" + contact_number + ")" +
+                    " AND " + IS_ANSWERED_CALL;
             String[] selectionArgs = null;
 
             cursor = contentResolver.query(CallLog.Calls.CONTENT_URI, projection, selection, selectionArgs, CallLog.Calls.DATE + " DESC");
@@ -282,8 +288,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                     CallLog.Calls.CONTENT_URI,
                     FROM_COLUMNS_CALL,
                     CallLog.Calls.DATE + " > " + lastUpdate +
-                            " AND (type = " + CallLog.Calls.INCOMING_TYPE +
-                            " OR type = " + CallLog.Calls.OUTGOING_TYPE+")",
+                            " AND " + IS_ANSWERED_CALL,
                     null,
                     CallLog.Calls.DATE + " ASC");
             if (cursor != null && cursor.moveToFirst()) {

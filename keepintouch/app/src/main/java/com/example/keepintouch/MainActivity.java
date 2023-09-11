@@ -70,6 +70,14 @@ public class MainActivity extends AppCompatActivity {
             startActivity(myIntent);
         }
         super.onCreate(savedInstanceState);
+      // Cursor cursor =  this.getContentResolver().query(
+      //         CallLog.Calls.CONTENT_URI,
+      //         new String[]{CallLog.Calls.DURATION, CallLog.Calls.NUMBER, CallLog.Calls.DATE},
+      //         null,null,null);
+      //
+      // while (cursor != null && cursor.moveToNext());
+
+
         //myContactTable = new MyContactTable(this);
         setContentView(R.layout.contacts_list_view);
         myContactTable = new MyContactTable(this);
