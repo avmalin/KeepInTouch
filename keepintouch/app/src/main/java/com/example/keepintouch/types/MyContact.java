@@ -61,6 +61,7 @@ public class MyContact {
         mBirthday = birthday;
         mPhotoSrc = photoSrc;
         mLastCall = 0;
+        mPriorityType = null;
     }
     public MyContact(long id, PriorityType type, String number, String name, String photoSrc)
     {

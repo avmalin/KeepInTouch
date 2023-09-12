@@ -67,6 +67,7 @@
     <ListView
         android:id="@+id/listViewContacts"
         android:layout_width="match_parent"
+
         android:layout_height="match_parent"
         android:layout_below="@+id/search_header"
         tools:listitem="@layout/contacts_list_item" />

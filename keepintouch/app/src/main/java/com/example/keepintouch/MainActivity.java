@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private MyContactTable myContactTable;
     private Map<Integer,MyContact> contactMap;
     private AnimationDrawable animationLoading;
+    private static int selectedItem =-1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,10 +144,25 @@ public class MainActivity extends AppCompatActivity {
                 }
                 tvId.setText(String.valueOf(contact.getContactId()));
                 tvPriority.setText(contact.getPriorityType().toString());
+
+                //set on click item
+                LinearLayout call_layout = convertView.findViewById(R.id.call_layout);
+                convertView.setOnClickListener(v -> {
+                    if(position != selectedItem) {
+                        call_layout.setVisibility(View.VISIBLE);
+
+                        selectedItem = position;
+                    }
+                    else {
+                        call_layout.setVisibility(View.GONE);
+                        selectedItem = -1;
+                    }
+
+                });
                 return convertView;
             }
         };
-        contactsList.setOnItemClickListener((parent, view, position, id) -> callingByID(listContact.get(position).getContactId()));
+        //contactsList.setOnItemClickListener((parent, view, position, id) -> callingByID(listContact.get(position).getContactId()));
         contactsList.setAdapter(adapter);
 
     }

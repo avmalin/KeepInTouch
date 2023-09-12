@@ -83,6 +83,7 @@ public class PrioritySetActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String query = s.toString().trim();
                 performSearch(query);
+                selectedItem = -1;
             }
 
             @Override
@@ -99,15 +100,7 @@ public class PrioritySetActivity extends AppCompatActivity {
         contactMap = new HashMap<>();
 
         //define on-click item
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            selectedItem = position;
-            if (cursorAdapter!=null)
-                cursorAdapter.notifyDataSetChanged();
-            if(arrayAdapter!=null)
-                arrayAdapter.notifyDataSetChanged();
 
-
-        });
         performSearch("");
     }
 
@@ -140,12 +133,14 @@ public class PrioritySetActivity extends AppCompatActivity {
                             Cursor cursor = getCursor();
                             cursor.moveToPosition(position);
                             ListView listView = findViewById(R.id.listViewContacts);
+                            //define on-click item
+
 
                             //get the index of the data in the cursor.
                             int nameIndex = cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME);
                             int photoIndex = cursor.getColumnIndexOrThrow(ContactsContract.Contacts.PHOTO_URI);
                             int idIndex = cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID);
-
+                            boolean isOnList;
                             //set the data into the view item.
                             ((TextView)convertView.findViewById(R.id.tv_name)).setText(cursor.getString(nameIndex));
                             String photoUri = cursor.getString(photoIndex);
@@ -164,20 +159,44 @@ public class PrioritySetActivity extends AppCompatActivity {
                                 {
                                     contactMap.put(
                                                 (long)group.getTag(R.id.tv_contact_id),
-                                                new MyContact((long)group.getTag(R.id.tv_contact_id),
-                                                        PriorityType.valueOf(checkedId),(String)group.getTag(R.id.tv_name),
+                                                new MyContact(
+                                                        (long)group.getTag(R.id.tv_contact_id),
+                                                        PriorityType.valueOf(checkedId),
+                                                        (String)group.getTag(R.id.tv_name),
                                                         (String)group.getTag(R.id.iv_image)));
+                                    boolean ifInList = false;
                                     for (MyContact c:listContact){
                                         if (c.getContactId() == (long)group.getTag(R.id.tv_contact_id))
                                         {
-                                            c.setNumber("-1");
+                                            c.setNumber(String.valueOf(checkedId));
+                                            ifInList = true;
                                             break;
                                         }
                                         notifyDataSetChanged();
                                     }
+                                    if (!ifInList)
+                                        listContact.add(new MyContact(
+                                                (long)group.getTag(R.id.tv_contact_id),
+                                                null,
+                                                String.valueOf(checkedId),
+                                                (String)group.getTag(R.id.tv_name),
+                                                (String) group.getTag(R.id.iv_image)));
+                                });
+
+                            }
+                            else {
+                                convertView.findViewById(R.id.rg_priority1).setVisibility(View.GONE);
+                                //define on-click item
+                                convertView.setOnClickListener((view) -> {
+                                    if (position == selectedItem)
+                                        selectedItem = -1;
+                                    else selectedItem = position;
+                                    if (cursorAdapter!=null)
+                                        cursorAdapter.notifyDataSetChanged();
+                                    if(arrayAdapter!=null)
+                                        arrayAdapter.notifyDataSetChanged();
                                 });
                             }
-                            else convertView.findViewById(R.id.rg_priority1).setVisibility(View.GONE);
                             return convertView;
                         }
                     };
@@ -213,16 +232,26 @@ public class PrioritySetActivity extends AppCompatActivity {
                             //tvPriority.setText(contact.getPriorityType().toString());//only on all contacts
                             ivEdit.setVisibility(View.VISIBLE);
 
-                            if (contact.getNumber()!=null && contact.getNumber().equals("-1"))
+
+
+                            if(contact.getPriorityType() == null)//there isn't prev priority (its new)
+                                tvName.setTextColor(getResources().getColor(R.color.colorPrimary));
+                            else if (contact.getNumber() == null ||
+                                    contact.getPriorityType().idOf() == Integer.decode(contact.getNumber())) // chosen priority equals to prev priority
+                                tvName.setTextColor(Color.GRAY);
+                            else
                                 tvName.setTextColor(Color.RED);
-                            else tvName.setTextColor(Color.GRAY);
+
+
                             //set checkboxes to visible to only selected  item
                             if (position == selectedItem)
                             {
                                 RadioGroup radioGroup = convertView.findViewById(R.id.rg_priority1);
                                 //set the current priority if not change
-                                if (contact.getNumber()==null || (contact.getNumber()!=null && !contact.getNumber().equals("-1")))
+                                if (contact.getNumber()==null ||  contact.getNumber().equals("0")) // there isn't checked priority
                                     radioGroup.check(getItem(position).getPriorityType().idOf());
+                                else radioGroup.check(Integer.decode(getItem(position).getNumber()));
+
                                 radioGroup.setVisibility(View.VISIBLE);
                                 radioGroup.setTag(R.id.tv_contact_id,contact.getContactId());
                                 radioGroup.setTag(R.id.tv_name, contact.getName());
@@ -234,22 +263,39 @@ public class PrioritySetActivity extends AppCompatActivity {
                                                     PriorityType.valueOf(checkedId),
                                                     (String) group.getTag(R.id.tv_name),
                                                     (String) group.getTag(R.id.iv_image)));
-                                    getItem(position).setNumber("-1");
-                                    if (getItem(position).getPriorityType().idOf() == checkedId) {
-                                        getItem(position).setNumber("0");//clear the red text
-                                        //arrayAdapter.notifyDataSetChanged();
-                                    }
+                                    getItem(position).setNumber(String.valueOf(checkedId));
+
+
+
                                     notifyDataSetChanged();
+                                });
+                                convertView.setOnClickListener(v -> {
+                                    selectedItem=-1;
+                                    arrayAdapter.notifyDataSetChanged();
                                 });
 
                             }
-                            else convertView.findViewById(R.id.rg_priority1).setVisibility(View.GONE);
+                            else
+                            {
+                                convertView.findViewById(R.id.rg_priority1).setVisibility(View.GONE);
+                                //define on-click item
+                                convertView.setOnClickListener((view) -> {
+                                    if (position == selectedItem)
+                                        selectedItem = -1;
+                                    else selectedItem = position;
+                                    if (cursorAdapter!=null)
+                                        cursorAdapter.notifyDataSetChanged();
+                                    if(arrayAdapter!=null)
+                                        arrayAdapter.notifyDataSetChanged();
+                                });
+                            }
 
                             return convertView;
 
                         }
                     };
             listView.setAdapter(arrayAdapter);
+
         }
     }
 
