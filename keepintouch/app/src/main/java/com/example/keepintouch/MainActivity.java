@@ -31,6 +31,7 @@ import com.example.keepintouch.types.CalculationContactsTask;
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -223,6 +224,38 @@ public class MainActivity extends AppCompatActivity {
         animationLoading.stop();
         ImageView imageLoading =findViewById(R.id.iv_loading);
         imageLoading.setVisibility(View.INVISIBLE);
+    }
+    public void sendWhatsAppById(long contact_id) {
+
+
+        Cursor cursor =null;
+        try{
+            ContentResolver contentResolver = this.getContentResolver();
+            String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER};
+            String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? ";
+            String[] selectionArgs = {String.valueOf(contact_id)};
+
+            cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                int phoneNumberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                String phoneNumber = cursor.getString(phoneNumberIndex);
+                String uri = "https://api.whatsapp.com/send?phone=" + phoneNumber;
+                uri += "&text=" + URLEncoder.encode(getString(R.string.whatsappMessege), "UTF-8");
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(uri));
+                intent.setPackage("com.whatsapp");
+                // Start WhatsApp chat
+                startActivity(intent);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast toast = Toast.makeText(getApplicationContext(), "WhatsApp isn't install", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        finally {
+            if (cursor!=null && !cursor.isClosed())
+                cursor.close();
+        }
     }
 }
 

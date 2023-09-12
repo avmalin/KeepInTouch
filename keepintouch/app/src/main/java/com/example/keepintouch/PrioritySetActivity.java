@@ -187,6 +187,7 @@ public class PrioritySetActivity extends AppCompatActivity {
                 System.out.println(e);
             }
         }
+        /*if search is empty showing my contact to edit*/
         else {
             arrayAdapter =
                     new ArrayAdapter<MyContact>(this,R.layout.contacts_list_item,listContact){
@@ -201,6 +202,7 @@ public class PrioritySetActivity extends AppCompatActivity {
                             ImageView ivView = convertView.findViewById(R.id.iv_image);
                             TextView tvId = convertView.findViewById(R.id.tv_contact_id);
                             TextView tvPriority = convertView.findViewById(R.id.tv_priority);
+                            ImageView ivEdit =  convertView.findViewById((R.id.iv_edit));
                             MyContact contact = getItem(position);
                             //sets views
                             tvName.setText(contact.getName());
@@ -208,7 +210,9 @@ public class PrioritySetActivity extends AppCompatActivity {
                             String photoUri = contact.getPhotoSrc();
                             if (photoUri != null)
                                 ivView.setImageURI(Uri.parse(photoUri));
-                            tvPriority.setText(contact.getPriorityType().toString());
+                            //tvPriority.setText(contact.getPriorityType().toString());//only on all contacts
+                            ivEdit.setVisibility(View.VISIBLE);
+
                             if (contact.getNumber()!=null && contact.getNumber().equals("-1"))
                                 tvName.setTextColor(Color.RED);
                             else tvName.setTextColor(Color.GRAY);
