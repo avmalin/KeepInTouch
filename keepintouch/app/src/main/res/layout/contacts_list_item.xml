@@ -163,14 +163,16 @@
         android:gravity="center_vertical"
         app:layout_constraintStart_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/contactItem"
-        android:layout_marginStart="30dp">
+        android:layout_marginStart="15dp">
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:id="@+id/iv_whatsapp"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
             android:src="@drawable/whatsapp_logo_wine"/>
         <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:id="@+id/iv_call"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:src="@drawable/baseline_call_24"/>
     </LinearLayout>
 

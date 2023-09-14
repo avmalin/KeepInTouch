@@ -182,7 +182,7 @@ public class MyContactTable extends SQLiteOpenHelper {
         return cv;
     }
 
-    private long getLastCallById(long contact_id) {
+    public long getLastCallById(long contact_id) {
         ContentResolver contentResolver = sContext.getContentResolver();
         Cursor cursor = null;
         long lastCall = 0;

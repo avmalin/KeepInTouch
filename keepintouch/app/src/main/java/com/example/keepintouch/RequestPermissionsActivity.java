@@ -29,7 +29,8 @@ public class RequestPermissionsActivity extends AppCompatActivity {
         {
             if(ActivityCompat.shouldShowRequestPermissionRationale(this, MainActivity.PERMISSIONS[0])||
                     ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[1]) ||
-                    ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[2]))
+                    ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[2]) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[3]))
             {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage("This message request permission to contacts, call log and external storage to work as excepted.")
@@ -73,9 +74,10 @@ public class RequestPermissionsActivity extends AppCompatActivity {
             }
 
 
-            else if (!ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[0])
-            && !ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[1])&&
-                    !ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[2])) {
+            else if (!ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[0]) &&
+                    !ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[1]) &&
+                    !ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[2]) &&
+                    !ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[3])) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage("The application in unavailable because this Application required permissions that you have denied." +
                                 "Please allow Read-Contact, Read-Call-log and Read-External-Storage to continue.")

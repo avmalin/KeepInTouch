@@ -1,6 +1,10 @@
 package com.example.keepintouch;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +13,7 @@ import android.database.SQLException;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
@@ -31,6 +36,7 @@ import androidx.core.app.ActivityCompat;
 import com.example.keepintouch.types.CalculationContactsTask;
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
+import com.example.keepintouch.types.PriorityType;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -40,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String[] PERMISSIONS= {
             Manifest.permission.READ_CONTACTS,
             Manifest.permission.READ_CALL_LOG,
-            Manifest.permission.CALL_PHONE};
+            Manifest.permission.CALL_PHONE,
+            Manifest.permission.POST_NOTIFICATIONS};
     /*
      * Defines an array that contains column names to move from
      * the Cursor to the ListView.
@@ -73,20 +80,50 @@ public class MainActivity extends AppCompatActivity {
             startActivity(myIntent);
         }
         super.onCreate(savedInstanceState);
-      // Cursor cursor =  this.getContentResolver().query(
-      //         CallLog.Calls.CONTENT_URI,
-      //         new String[]{CallLog.Calls.DURATION, CallLog.Calls.NUMBER, CallLog.Calls.DATE},
-      //         null,null,null);
-      //
-      // while (cursor != null && cursor.moveToNext());
-
-
-        //myContactTable = new MyContactTable(this);
         setContentView(R.layout.contacts_list_view);
         myContactTable = new MyContactTable(this);
 
+        //init for notifications
+        createNotificationChannel();
+        TextView tv = findViewById(R.id.tv_header);
+        tv.setOnClickListener((v -> {
+            MyContact c = (MyContact) contactsList.getItemAtPosition(0);
+            createNotification(c.getContactId(),c.getName(),c.getLastCall(),c.getPriorityType());
+        }));
+
+
     }
 
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                "notifyKeepInTouch",
+                "My Channel Name",
+                NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription("channel for keepInTouchNotifications");
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    public void createNotification(long contactId, String contactName, long lastCall, PriorityType pt){
+        Intent intent = new Intent(MainActivity.this, NotificationReceiver.class);
+        intent.putExtra("id",contactId);
+        intent.putExtra("name",contactName);
+        intent.putExtra("priority",pt.compValue());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                MainActivity.this,
+                (int)contactId,
+                intent,
+                PendingIntent.FLAG_MUTABLE);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        long timeToNote = lastCall + pt.compValue()* 1000 * 60 * 60 *24; //1 day =  1000 * 60 * 60 * 24
+        timeToNote = System.currentTimeMillis() ;
+        alarmManager.set(
+                AlarmManager.RTC_WAKEUP,
+                timeToNote,
+                pendingIntent);
+    }
     public void showMyContactActivity() {
         contactsList = findViewById(R.id.listView);
         ArrayList<MyContact> listContact;
@@ -118,7 +155,12 @@ public class MainActivity extends AppCompatActivity {
                 ImageView ivView = convertView.findViewById(R.id.iv_image);
                 TextView tvId = convertView.findViewById(R.id.tv_contact_id);
                 TextView tvPriority = convertView.findViewById(R.id.tv_priority);
+                LinearLayout call_layout = convertView.findViewById(R.id.call_layout);
+                ImageView ivWhatsapp = convertView.findViewById(R.id.iv_whatsapp);
+                ImageView ivCall = convertView.findViewById(R.id.iv_call);
+                String photoUri = contact.getPhotoSrc();
 
+                //set days
                 long date  = contact.getLastCall();
                 String lastDate = "";
                 if (date > 0) {
@@ -128,17 +170,16 @@ public class MainActivity extends AppCompatActivity {
                    if(days >  contact.getPriorityType().compValue())
                        tvNumber.setTextColor(Color.RED);
                 }
-                else if (date==0)
+                else if (date==0)//if never called
                 {
                     lastDate = "∞";
                     tvNumber.setTextColor(Color.RED);
                     tvNumber.setTextSize(24);
                 }
 
+                //sets properties
                 tvName.setText(contact.getName());
                 tvNumber.setText(lastDate);
-
-                String photoUri = contact.getPhotoSrc();
                 if (photoUri != null) {
                     ivView.setImageURI(Uri.parse(photoUri));
                 }
@@ -146,19 +187,23 @@ public class MainActivity extends AppCompatActivity {
                 tvPriority.setText(contact.getPriorityType().toString());
 
                 //set on click item
-                LinearLayout call_layout = convertView.findViewById(R.id.call_layout);
+                if (position == selectedItem)
+                    call_layout.setVisibility(View.VISIBLE);
+                else call_layout.setVisibility(View.GONE);
                 convertView.setOnClickListener(v -> {
                     if(position != selectedItem) {
-                        call_layout.setVisibility(View.VISIBLE);
-
                         selectedItem = position;
+                        adapter.notifyDataSetChanged();
                     }
-                    else {
-                        call_layout.setVisibility(View.GONE);
+                    else{
                         selectedItem = -1;
+                        adapter.notifyDataSetChanged();
                     }
-
                 });
+
+                //set listeners
+                ivCall.setOnClickListener((v -> callingByID(contact.getContactId())));
+                ivWhatsapp.setOnClickListener((v -> sendWhatsAppById(contact.getContactId())));
                 return convertView;
             }
         };
@@ -257,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
                 int phoneNumberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
                 String phoneNumber = cursor.getString(phoneNumberIndex);
                 String uri = "https://api.whatsapp.com/send?phone=" + phoneNumber;
-                uri += "&text=" + URLEncoder.encode(getString(R.string.whatsappMessege), "UTF-8");
+                uri += "&text=" + URLEncoder.encode(getString(R.string.whatsappMessage), "UTF-8");
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(uri));
                 intent.setPackage("com.whatsapp");
