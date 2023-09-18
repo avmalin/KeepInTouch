@@ -1,10 +1,6 @@
 package com.example.keepintouch;
 
 import android.Manifest;
-import android.app.AlarmManager;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,7 +9,6 @@ import android.database.SQLException;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
@@ -33,10 +28,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.example.keepintouch.android.NotificationManage;
 import com.example.keepintouch.types.CalculationContactsTask;
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
-import com.example.keepintouch.types.PriorityType;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -71,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private Map<Integer,MyContact> contactMap;
     private AnimationDrawable animationLoading;
     private static int selectedItem =-1;
+    private NotificationManage mNotificationManage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,46 +80,18 @@ public class MainActivity extends AppCompatActivity {
         myContactTable = new MyContactTable(this);
 
         //init for notifications
-        createNotificationChannel();
+        mNotificationManage = NotificationManage.getInstance();
+        mNotificationManage.createChannel(this);
         TextView tv = findViewById(R.id.tv_header);
         tv.setOnClickListener((v -> {
             MyContact c = (MyContact) contactsList.getItemAtPosition(0);
-            createNotification(c.getContactId(),c.getName(),c.getLastCall(),c.getPriorityType());
+            mNotificationManage.createNotification(this, c.getContactId(),c.getName(),c.getLastCall(),c.getPriorityType());
         }));
 
 
     }
 
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                "notifyKeepInTouch",
-                "My Channel Name",
-                NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setDescription("channel for keepInTouchNotifications");
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
-    public void createNotification(long contactId, String contactName, long lastCall, PriorityType pt){
-        Intent intent = new Intent(MainActivity.this, NotificationReceiver.class);
-        intent.putExtra("id",contactId);
-        intent.putExtra("name",contactName);
-        intent.putExtra("priority",pt.compValue());
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                MainActivity.this,
-                (int)contactId,
-                intent,
-                PendingIntent.FLAG_MUTABLE);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        long timeToNote = lastCall + pt.compValue()* 1000 * 60 * 60 *24; //1 day =  1000 * 60 * 60 * 24
-        timeToNote = System.currentTimeMillis() ;
-        alarmManager.set(
-                AlarmManager.RTC_WAKEUP,
-                timeToNote,
-                pendingIntent);
-    }
+   
     public void showMyContactActivity() {
         contactsList = findViewById(R.id.listView);
         ArrayList<MyContact> listContact;

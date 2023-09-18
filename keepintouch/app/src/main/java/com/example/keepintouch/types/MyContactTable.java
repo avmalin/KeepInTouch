@@ -14,6 +14,8 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.example.keepintouch.android.NotificationManage;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -378,6 +380,7 @@ public class MyContactTable extends SQLiteOpenHelper {
     public void updateTableFromMap(Map<Long, MyContact> contactMap) {
         SQLiteDatabase db;
         Cursor cursor = null;
+        NotificationManage notificationManage = NotificationManage.getInstance();
         try {
             db = getWritableDatabase();
             for (MyContact c : contactMap.values()) {
@@ -391,7 +394,8 @@ public class MyContactTable extends SQLiteOpenHelper {
                     if (result == 0) {
                         db.insert(CONTACTS_TABLE_NAME, null, cv);
                     }
-
+                    //create notification
+                    notificationManage.createNotification(sContext,c.getContactId(),c.getName(),c.getLastCall(),c.getPriorityType());
                 }
             }
             db.close();

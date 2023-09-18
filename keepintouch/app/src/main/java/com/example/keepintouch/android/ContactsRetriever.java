@@ -8,4 +8,5 @@ public interface ContactsRetriever {
     List<MyContact> getContactsFromAndroid();
     MyContact getContactByIdFromAndroid(int id);
     void saveContactToDB(List<MyContact> myContacts);
+
     }

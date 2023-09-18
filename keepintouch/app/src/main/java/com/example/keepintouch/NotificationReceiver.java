@@ -1,8 +1,5 @@
 package com.example.keepintouch;
 
-import static android.content.Context.ALARM_SERVICE;
-
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,7 +13,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.example.keepintouch.android.NotificationManage;
 import com.example.keepintouch.types.MyContactTable;
+import com.example.keepintouch.types.PriorityType;
 
 public class NotificationReceiver extends BroadcastReceiver {
     @Override
@@ -33,9 +32,9 @@ public class NotificationReceiver extends BroadcastReceiver {
 
                 if (timeToNote < System.currentTimeMillis()) {
                     String text = name + " מחכה כבר הרבה זמן לשיחה ממך!";
-                    Bitmap bMap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.applogo_round);
+                    Bitmap bMap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.applogo);
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "notifyKeepInTouch")
-                            .setSmallIcon(R.mipmap.applogo_round)
+                            .setSmallIcon(R.mipmap.applogo)
                             .setContentTitle("הרבה זמן לא התקשרת")
                             .setContentText(text)
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -49,28 +48,12 @@ public class NotificationReceiver extends BroadcastReceiver {
 
                     }
                 }
-                else{
-                    createNotification(context,contactId,name,lastCall,priority);
-                }
+                //set the next notification
+                NotificationManage notificationManage = NotificationManage.getInstance();
+                notificationManage.createNotification(context,contactId,name,lastCall, PriorityType.fromInt(priority));
+
             }
         }
 
-    }
-    public void createNotification(Context context, Long contactId, String contactName, long lastCall, int pt){
-        Intent intent = new Intent(context, NotificationReceiver.class);
-        intent.putExtra("id",contactId);
-        intent.putExtra("name",contactName);
-        intent.putExtra("priority",pt);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                context,
-                0,
-                intent,
-                0);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-        long timeToNote = lastCall + pt* 1000 * 60 * 60 *24; //1 day =  1000 * 60 * 60 * 24
-        alarmManager.set(
-                AlarmManager.RTC_WAKEUP,
-                timeToNote,
-                pendingIntent);
     }
 }
