@@ -1,4 +1,6 @@
 package com.example.keepintouch.types;
+import androidx.annotation.NonNull;
+
 import com.example.keepintouch.R;
 
 public enum PriorityType {
@@ -10,13 +12,13 @@ public enum PriorityType {
     public static PriorityType fromInt(int x)
     {
         switch (x) {
-            case 0:
+            case 7:
                 return WEEKLY;
-            case 1:
+            case 30:
                 return MONTHLY;
-            case 2:
+            case 180:
                 return HALF_YEAR;
-            case 3:
+            case 360:
                 return YEARLY;
             default:
                 return NEVER;
@@ -63,6 +65,23 @@ public enum PriorityType {
                 return 360;
             default:
                 return 0;
+        }
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        switch (this) {
+            case WEEKLY:
+                return "WEEKLY";
+            case MONTHLY:
+                return "MONTHLY";
+            case HALF_YEAR:
+                return "HALF YEAR";
+            case YEARLY:
+                return "YEARLY";
+            default:
+                return "NEVER";
         }
     }
 }

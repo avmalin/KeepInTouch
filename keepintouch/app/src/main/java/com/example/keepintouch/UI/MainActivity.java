@@ -1,4 +1,4 @@
-package com.example.keepintouch;
+package com.example.keepintouch.UI;
 
 import android.Manifest;
 import android.content.ContentResolver;
@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.example.keepintouch.R;
 import com.example.keepintouch.android.NotificationManage;
 import com.example.keepintouch.types.CalculationContactsTask;
 import com.example.keepintouch.types.MyContact;
@@ -70,9 +71,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Intent myIntent = new Intent(MainActivity.this, inAppTutorial.class);
+        startActivity(myIntent);
         if (!hasPermissions(PERMISSIONS))
         {
-            Intent myIntent = new Intent(MainActivity.this, RequestPermissionsActivity.class);
+            myIntent = new Intent(MainActivity.this, RequestPermissionsActivity.class);
             startActivity(myIntent);
         }
         super.onCreate(savedInstanceState);
@@ -85,8 +88,9 @@ public class MainActivity extends AppCompatActivity {
         TextView tv = findViewById(R.id.tv_header);
         tv.setOnClickListener((v -> {
             MyContact c = (MyContact) contactsList.getItemAtPosition(0);
-            mNotificationManage.createNotification(this, c.getContactId(),c.getName(),c.getLastCall(),c.getPriorityType());
+            //mNotificationManage.createNotification(this, c.getContactId(),c.getName(),c.getLastCall(),c.getPriorityType());
         }));
+
 
 
     }

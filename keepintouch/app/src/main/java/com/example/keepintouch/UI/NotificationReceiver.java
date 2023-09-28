@@ -1,4 +1,4 @@
-package com.example.keepintouch;
+package com.example.keepintouch.UI;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.example.keepintouch.R;
 import com.example.keepintouch.android.NotificationManage;
 import com.example.keepintouch.types.MyContactTable;
 import com.example.keepintouch.types.PriorityType;
@@ -20,6 +21,8 @@ import com.example.keepintouch.types.PriorityType;
 public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        //init notification manager
+        NotificationManage notificationManage = NotificationManage.getInstance();
         Log.d("Create Notify", "Received the timed intent");
         long contactId = intent.getLongExtra("id",-1);
         if (contactId !=-1) {
@@ -45,12 +48,14 @@ public class NotificationReceiver extends BroadcastReceiver {
                     builder.setContentIntent(pendingIntent);
                     if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
                         notificationManager.notify((int) contactId, builder.build());
-
                     }
+                    //set the next notification to 1 week from now
+                    //1 week from now its now + 7 day - pt*day (because the func add this time to note)
+                    timeToNote = System.currentTimeMillis() + (long) (7 - priority) * 1000 * 60 * 60 * 24;
+                    notificationManage.createNotification(context,contactId,name,timeToNote, PriorityType.fromInt(priority));
                 }
-                //set the next notification
-                NotificationManage notificationManage = NotificationManage.getInstance();
-                notificationManage.createNotification(context,contactId,name,lastCall, PriorityType.fromInt(priority));
+                //set  notification to the update last call.
+                else notificationManage.createNotification(context,contactId,name,lastCall, PriorityType.fromInt(priority));
 
             }
         }

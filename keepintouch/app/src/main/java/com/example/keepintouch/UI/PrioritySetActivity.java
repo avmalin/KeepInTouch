@@ -1,4 +1,4 @@
-package com.example.keepintouch;
+package com.example.keepintouch.UI;
 
 import android.database.Cursor;
 import android.graphics.Color;
@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.keepintouch.R;
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
 import com.example.keepintouch.types.PriorityType;

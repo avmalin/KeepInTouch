@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 
-import com.example.keepintouch.MainActivity;
+import com.example.keepintouch.UI.MainActivity;
 
 import java.lang.ref.WeakReference;
 
