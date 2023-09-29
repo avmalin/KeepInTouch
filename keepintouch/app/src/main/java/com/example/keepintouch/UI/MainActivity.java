@@ -91,6 +91,10 @@ public class MainActivity extends AppCompatActivity {
             //mNotificationManage.createNotification(this, c.getContactId(),c.getName(),c.getLastCall(),c.getPriorityType());
         }));
 
+        // init button
+        ImageView addContactButton = findViewById(R.id.addContactButton);
+        addContactButton.setOnClickListener((v)->openPrioritySet(v));
+
 
 
     }
@@ -131,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 ImageView ivWhatsapp = convertView.findViewById(R.id.iv_whatsapp);
                 ImageView ivCall = convertView.findViewById(R.id.iv_call);
                 String photoUri = contact.getPhotoSrc();
+
 
                 //set days
                 long date  = contact.getLastCall();

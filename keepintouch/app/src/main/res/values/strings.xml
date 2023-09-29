@@ -1,35 +1,37 @@
 <resources>
-    <string name="app_name">KeepInTouch</string>
-    <string name="app_header">KeepInTouch app</string>
-    <string name="once_a_week">Once a week</string>
-    <string name="once_a_month">Once a month</string>
-    <string name="once_every_six_month">Once every six month</string>
-    <string name="once_a_year">Once a year</string>
+    <string name="app_name" translatable="false">KeepInTouch</string>
+    <string name="app_header" translatable="false">KeepInTouch app</string>
+    <string name="once_a_week" translatable="false">Once a week</string>
+    <string name="once_a_month" translatable="false">Once a month</string>
+    <string name="once_every_six_month" translatable="false">Once every six month</string>
+    <string name="once_a_year" translatable="false">Once a year</string>
     <string name="never">never</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="set_priority">set priority</string>
-    <string name="profile_photo">profile photo</string>
-    <string name="add_contacts_to_app">choose your friends</string>
-    <string name="accept_button">Accept button</string>
-    <string name="back_button">back button</string>
-    <string name="accept_add">accept add</string>
-    <string name="cancel_change">cancel change</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="set_priority" translatable="false">set priority</string>
+    <string name="profile_photo" translatable="false">profile photo</string>
+    <string name="add_contact_header">choose your friends</string>
+    <string name="accept_button" translatable="false">Accept button</string>
+    <string name="back_button" translatable="false">back button</string>
+    <string name="accept_add" translatable="false">accept add</string>
+    <string name="cancel_change" translatable="false">cancel change</string>
     <string name="request_permissions">Request Permissions</string>
     <string name="year">year</string>
     <string name="half_year">half year</string>
     <string name="month">month</string>
     <string name="week">week</string>
-    <string name="whatsappMessage">שלום! הרבה זמן לא דיברנו, מתי מתאים לך לדבר?</string>
-    <string name="title_activity_in_app_tutorial">inAppTutorial</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
+    <string name="title_activity_in_app_tutorial" translatable="false">inAppTutorial</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+    <string name="nav_header_title" translatable="false">Android Studio</string>
+    <string name="nav_header_subtitle" translatable="false">android.studio@android.com</string>
+    <string name="nav_header_desc" translatable="false">Navigation header</string>
+    <string name="action_settings" translatable="false">Settings</string>
 
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_home" translatable="false">Home</string>
+    <string name="menu_gallery" translatable="false">Gallery</string>
+    <string name="menu_slideshow" translatable="false">Slideshow</string>
+    <string name="whatsappMessage">Hi! It\'s been a long time since we\'ve talked, when is it convenient for you to talk?</string>
+    <string name="search">search</string>
+
 </resources>

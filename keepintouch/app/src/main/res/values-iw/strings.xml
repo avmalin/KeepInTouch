@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="never">אף פעם</string>
+    <string name="request_permissions">אשר הרשאות</string>
+    <string name="year">שנה</string>
+    <string name="half_year">חצי שנה</string>
+    <string name="month">חודש</string>
+    <string name="week">שבוע</string>
+    <string name="whatsappMessage">שלום! הרבה זמן לא דיברנו, מתי מתאים לך לדבר?</string>
+    <string name="add_contact_header">בחר את החברים שלך</string>
+    <string name="search">חפש</string>
+</resources>

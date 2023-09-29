@@ -28,7 +28,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:paddingTop="3dp"
-            android:text="@string/add_contacts_to_app"
+            android:text="@string/add_contact_header"
             android:gravity="center|bottom"
             app:layout_constraintEnd_toStartOf="@+id/ib_accept"
             app:layout_constraintStart_toEndOf="@id/ib_back"
@@ -61,7 +61,7 @@
             android:id="@+id/et_search"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:hint="search"
+            android:hint="@string/search"
             android:inputType="text"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
     <ListView

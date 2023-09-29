@@ -39,6 +39,21 @@ public enum PriorityType {
                 return NEVER;
         }
     }
+    public static PriorityType fromString(String pt){
+        switch (pt) {
+            case "WEEKLY":
+                return WEEKLY;
+            case "MONTHLY":
+                return MONTHLY;
+            case "HALF YEAR":
+            case "HALF_YEAR":
+                return HALF_YEAR;
+            case "YEARLY":
+                return YEARLY;
+            default:
+                return NEVER;
+    }
+    }
     public int idOf(){
         switch (this){
             case WEEKLY:

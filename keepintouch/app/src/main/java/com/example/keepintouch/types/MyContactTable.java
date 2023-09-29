@@ -116,7 +116,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                 do {
                     list.add(new MyContact(
                             cursor.getInt(cursor.getColumnIndexOrThrow(CONTACT_ID_COL)),
-                            PriorityType.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(PRIORITY_TYPE_COL))),
+                            PriorityType.fromString(cursor.getString(cursor.getColumnIndexOrThrow(PRIORITY_TYPE_COL))),
                             cursor.getLong(cursor.getColumnIndexOrThrow(LAST_CALL_COL)),
                             cursor.getString(cursor.getColumnIndexOrThrow(PHONE_COL)),
                             cursor.getString(cursor.getColumnIndexOrThrow(PHOTO_SRC_COL)),
@@ -153,7 +153,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                 do {
                     contactMap.put(cursor.getLong(cursor.getColumnIndexOrThrow(CONTACT_ID_COL)), new MyContact(
                             cursor.getLong(cursor.getColumnIndexOrThrow(CONTACT_ID_COL)),
-                            PriorityType.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(PRIORITY_TYPE_COL))),
+                            PriorityType.fromString(cursor.getString(cursor.getColumnIndexOrThrow(PRIORITY_TYPE_COL))),
                             cursor.getLong(cursor.getColumnIndexOrThrow(LAST_CALL_COL)),
                             cursor.getString(cursor.getColumnIndexOrThrow(PHONE_COL)),
                             cursor.getString(cursor.getColumnIndexOrThrow(PHOTO_SRC_COL)),

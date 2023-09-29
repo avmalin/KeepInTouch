@@ -49,7 +49,13 @@ public class inAppTutorial extends AppCompatActivity {
             }
         });
         colorAnimator.start();
-
+        button.setOnClickListener((V)->{
+            setContentView(R.layout.step1_in_app_tutorial);
+            TextView tv_clickTo = findViewById(R.id.tv_click_to);
+            View arrow = findViewById(R.id.v_arrow);
+            YoYo.with(Techniques.Bounce).duration(1000).playOn(tv_clickTo);
+            //YoYo.with(Techniques.BounceInUp).duration(3000).playOn(arrow);
+        });
 
 
     }

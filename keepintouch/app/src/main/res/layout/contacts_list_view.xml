@@ -29,12 +29,11 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/imageButton"
+            android:id="@+id/addContactButton"
             android:layout_width="48dp"
             android:layout_height="42dp"
             android:layout_marginTop="18dp"
             android:contentDescription="@string/set_priority"
-            android:onClick="openPrioritySet"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.955"
             app:layout_constraintStart_toStartOf="parent"
@@ -52,7 +51,7 @@
             android:paddingEnd="10dp"
             android:src="@drawable/loading"
             android:visibility="invisible"
-            app:layout_constraintEnd_toStartOf="@+id/imageButton"
+            app:layout_constraintEnd_toStartOf="@+id/addContactButton"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/tv_header"
             app:layout_constraintTop_toTopOf="parent" />
