@@ -32,6 +32,7 @@ import com.example.keepintouch.android.NotificationManage;
 import com.example.keepintouch.types.CalculationContactsTask;
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
+import com.example.keepintouch.android.WorkManagerHelper;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -80,8 +81,11 @@ public class MainActivity extends AppCompatActivity {
         myContactTable = new MyContactTable(this);
 
         //init for notifications
-        mNotificationManage = NotificationManage.getInstance();
-        mNotificationManage.createChannel(this);
+        //mNotificationManage = NotificationManage.getInstance();
+        //mNotificationManage.createChannel(this);
+
+        //set works to manage notification
+        WorkManagerHelper.scheduleDailyWork(this);
 
 
 // test for set notification on header click

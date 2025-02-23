@@ -31,7 +31,8 @@ public class MyContactTable extends SQLiteOpenHelper {
     public static final String TABLE_NAME = "table_name";
     public static final String LAST_UPDATE = "last_update";
 
-    //table data
+    // ** table data
+    // CONTACT TABLE
     public static final String CONTACTS_TABLE_NAME = "my_contacts_table ";
     private static final String ID_COL = "_id";
     public static final String CONTACT_ID_COL = "contact_id";
@@ -40,6 +41,10 @@ public class MyContactTable extends SQLiteOpenHelper {
     public static final String NAME_COL = "name";
     public static final String LAST_CALL_COL = "last_call_date";
     public static final String PRIORITY_TYPE_COL = "priority_type";
+    // NOTIFICATION TABLE
+    public static final String NOTIFICATION_TABLE_NAME = "notification_table";
+    public static final String NOTIFICATION_ID_COL = "notification_id";
+    public static final String LAST_TIME_NOTIFICATION_COL = "last_time_notification";
 
     private static final String[] FROM_COLUMNS = {
             CONTACT_ID_COL,
@@ -94,6 +99,11 @@ public class MyContactTable extends SQLiteOpenHelper {
                 + LAST_CALL_COL + " INTEGER, "
                 + PRIORITY_TYPE_COL + " TEXT)";
         db.execSQL(query);
+
+        query = "CREATE TABLE " + NOTIFICATION_TABLE_NAME + " ("
+                + NOTIFICATION_ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + CONTACT_ID_COL + " INTEGER, "
+                + LAST_TIME_NOTIFICATION_COL + " INTEGER)";
         Log.i(null, "DataBase has been created.");
     }
 
@@ -245,6 +255,38 @@ public class MyContactTable extends SQLiteOpenHelper {
         return lastCallTime;
     }
 
+    public long getLastNotificationById(long contact_id) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = null;
+        long lastNotification = 0;
+        try{
+            cursor = db.query(NOTIFICATION_TABLE_NAME,
+                    new String[]{LAST_TIME_NOTIFICATION_COL},
+                    CONTACT_ID_COL + " = " + contact_id,
+                    null,
+                    null,
+                    null,
+                    null);
+            lastNotification = cursor.getLong(0);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            cursor.close();
+        }
+        return lastNotification;
+
+    }
+
+    public void setLastNotificationById(long contact_id, long lastNotification) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(CONTACT_ID_COL, contact_id);
+        cv.put(LAST_TIME_NOTIFICATION_COL, lastNotification);
+        db.insert(NOTIFICATION_TABLE_NAME, null, cv);
+    }
+
     //update the last_call column
     //recalculation the priority
 
@@ -394,8 +436,9 @@ public class MyContactTable extends SQLiteOpenHelper {
                     if (result == 0) {
                         db.insert(CONTACTS_TABLE_NAME, null, cv);
                     }
+                    // REMOVE moved to worker
                     //create notification
-                    notificationManage.createNotification(sContext,c.getContactId(),c.getName(),c.getLastCall(),c.getPriorityType());
+                    //notificationManage.createNotification(sContext,c.getContactId(),c.getName(),c.getLastCall(),c.getPriorityType());
                 }
             }
             db.close();
