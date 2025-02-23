@@ -74,6 +74,7 @@
                 android:id="@+id/iv_edit"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:contentDescription="edit_icon"
                 android:src="@drawable/round_edit_note_24"
                 android:visibility="gone"
                 app:tint="@color/primary"/>
@@ -134,12 +135,14 @@
             android:id="@+id/iv_whatsapp"
             android:layout_width="55dp"
             android:layout_height="55dp"
+            android:contentDescription="whatsapp_img"
             android:src="@drawable/whatsapp_logo_wine" />
 
         <ImageView
             android:id="@+id/iv_call"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:contentDescription="phone_img"
             android:src="@drawable/baseline_call_24"
             android:layout_marginStart="10dp"/>
     </LinearLayout>

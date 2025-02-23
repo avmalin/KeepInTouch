@@ -68,9 +68,15 @@
         android:id="@+id/listViewContacts"
         android:layout_width="match_parent"
 
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/search_header"
         tools:listitem="@layout/contacts_list_item" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/listViewContacts"
+        android:text="@string/search_name_to_add_friend"
+        android:gravity="center"/>
 
 
 </RelativeLayout>
