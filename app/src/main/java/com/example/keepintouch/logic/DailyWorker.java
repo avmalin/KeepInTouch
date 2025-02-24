@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.example.keepintouch.android.NotificationManage;
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
 import com.example.keepintouch.types.PriorityType;
@@ -26,19 +27,25 @@ public class DailyWorker extends Worker {
         Log.d("DailyWorker", "Work is running at 12:00!");
         myContactTable = new MyContactTable(getApplicationContext());
         ArrayList<MyContact> contactList = myContactTable.getContactList();
+        NotificationManage mNotificationManager = NotificationManage.getInstance();
+        Context context = getApplicationContext();
         //TODO: CHECK IF NEEDS TO update all
         for (MyContact contact : contactList) {
-            if(needsToNotification(contact,myContactTable)){
-                //TODO: notification
+            if (needsToNotification(contact, myContactTable)) {
+                mNotificationManager.createNotificationFromContact((context), contact);
             }
         }
         return Result.success();
     }
 
-    private boolean needsToNotification(MyContact contact, MyContactTable myContactTable) { {
+    private boolean needsToNotification(MyContact contact, MyContactTable myContactTable) {
         long lastCall = contact.getLastCall();
         int priority = (contact.getPriorityType().compValue());
-        long lastNotification = contact.getLastNotification();
-        return false;
+        long lastNotification = myContactTable.getLastNotificationById(contact.getContactId());
+        long timeToNotification = lastCall + ((long) priority * 1000 * 60 * 60 * 24); // 1 day = 24 hours = 24 * 60 * 60 * 1000 milliseconds
+        long currentTime = System.currentTimeMillis();
+        long timeToNotification2 = lastNotification + (7 * 1000 * 60 * 60 * 24); // 1 day = 24 hours = 24 * 60 * 60 * 1000 milliseconds
+        return timeToNotification < currentTime && timeToNotification2 <currentTime;
     }
 }
+

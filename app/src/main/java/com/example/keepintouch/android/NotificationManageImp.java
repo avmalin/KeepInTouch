@@ -8,18 +8,58 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
+import com.example.keepintouch.MainActivity;
 import com.example.keepintouch.NotificationReceiver;
+import com.example.keepintouch.R;
+import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.PriorityType;
 
 public class NotificationManageImp implements NotificationManage {
-    private static NotificationManageImp instance = new NotificationManageImp();
+    private static final NotificationManageImp instance = new NotificationManageImp();
 
     public static NotificationManageImp getInstance() {
         return instance;
     }
 
+
+
+    @Override
+    public void createChannel(Context context) {
+        NotificationChannel channel = new NotificationChannel(
+                "notifyKeepInTouch",
+                "remainder to keep in touch",
+                NotificationManager.IMPORTANCE_DEFAULT);
+        channel.setDescription("channel for remainder to keep in touch your friends");
+        NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
+    }
+
+    public void createNotificationFromContact(Context context, MyContact contact) {
+        String text = contact.getName() + " מחכה כבר הרבה זמן לשיחה ממך!";
+        Bitmap bMap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.applogo);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "notifyKeepInTouch")
+                .setSmallIcon(R.mipmap.applogo)
+                .setContentTitle("הרבה זמן לא התקשרת")
+                .setContentText(text)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setLargeIcon(bMap);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        Intent intent1 = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntent =  PendingIntent.getActivity(context,0,intent1,PendingIntent.FLAG_MUTABLE);
+        builder.setContentIntent(pendingIntent);
+        if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            notificationManager.notify((int) contact.getContactId(), builder.build());
+        }
+    }
 
     @Override
     public void createNotification(Context context, long contactId, String contactName, long lastCall, PriorityType pt) {
@@ -41,14 +81,4 @@ public class NotificationManageImp implements NotificationManage {
                 pendingIntent);
     }
 
-    @Override
-    public void createChannel(Context context) {
-        NotificationChannel channel = new NotificationChannel(
-                "notifyKeepInTouch",
-                "My Channel Name",
-                NotificationManager.IMPORTANCE_DEFAULT);
-        channel.setDescription("channel for keepInTouchNotifications");
-        NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-        notificationManager.createNotificationChannel(channel);
-    }
 }
