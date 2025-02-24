@@ -15,6 +15,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.keepintouch.android.NotificationManage;
+import com.example.keepintouch.logic.PhoneNumberUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public class MyContactTable extends SQLiteOpenHelper {
     //database data
 
     private static final String DB_NAME = "my_contacts_db.db";
-    private static final int DB_VERSION = 5;
+    private static final int DB_VERSION = 7;
     public static final String DETAILS_TABLE_NAME = "details_table";
     public static final String TABLE_NAME = "table_name";
     public static final String LAST_UPDATE = "last_update";
@@ -104,6 +105,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                 + NOTIFICATION_ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + CONTACT_ID_COL + " INTEGER, "
                 + LAST_TIME_NOTIFICATION_COL + " INTEGER)";
+        db.execSQL(query);
         Log.i(null, "DataBase has been created.");
     }
 
@@ -198,7 +200,7 @@ public class MyContactTable extends SQLiteOpenHelper {
         ContentResolver contentResolver = sContext.getContentResolver();
         Cursor cursor = null;
         long lastCall = 0;
-        String numbers = "";
+        List<String> numbersList = new ArrayList<>();
         try {
                 String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER};
                 String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? ";
@@ -208,11 +210,8 @@ public class MyContactTable extends SQLiteOpenHelper {
             {
                 if (cursor != null && cursor.moveToFirst()) {
                     do {
-                        numbers +="'";
-                        numbers += cursor.getString(0);
-                        numbers += "', ";
+                        numbersList.add(cursor.getString(0));
                     } while (cursor.moveToNext());
-                    numbers = numbers.substring(0, numbers.length() - 2);//remove the last ", "
                 }
             }
 
@@ -222,27 +221,44 @@ public class MyContactTable extends SQLiteOpenHelper {
             if (cursor != null)
                 cursor.close();
         }
-        if (numbers.compareTo( "")!=0)
-            lastCall = getLastCallById(numbers);
+        if (!numbersList.isEmpty()) {
+            numbersList = PhoneNumberUtils.generatePhoneVariations(numbersList);
+            lastCall = getLastCallById(numbersList);
+        }
         return lastCall;
     }
 
-    private long getLastCallById(String contact_number) {
+    private long getLastCallById(List<String> numbersList) {
         ContentResolver contentResolver = sContext.getContentResolver();
         Cursor cursor = null;
         long lastCallTime = 0;
 
         try {
             String[] projection = {CallLog.Calls.DATE};
-            String selection = CallLog.Calls.NUMBER + " IN (" + contact_number + ")" +
-                    " AND " + IS_ANSWERED_CALL;
-            String[] selectionArgs = null;
+            StringBuilder selection =new StringBuilder(CallLog.Calls.NUMBER + " IN (");
+            for (int i = 0; i < numbersList.size(); i++) {
+                selection.append("?");
+                if(i<numbersList.size()-1){
+                    selection.append(", ");
+                }
+            }
+            selection.append(") AND " + IS_ANSWERED_CALL);
+            String[] selectionArgs = numbersList.toArray(new String[0]);
 
-            cursor = contentResolver.query(CallLog.Calls.CONTENT_URI, projection, selection, selectionArgs, CallLog.Calls.DATE + " DESC");
+            cursor = contentResolver.query(CallLog.Calls.CONTENT_URI, projection, selection.toString(), selectionArgs, CallLog.Calls.DATE + " DESC");
 
             if (cursor != null && cursor.moveToFirst()) {
                 lastCallTime = cursor.getLong(cursor.getColumnIndexOrThrow(CallLog.Calls.DATE));
                 // Do something with the last call time, e.g. display it in a TextView
+            }
+            projection = new String[]{CallLog.Calls.NUMBER};
+            cursor = contentResolver.query(CallLog.Calls.CONTENT_URI, projection, null, null, null);
+
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    String number = cursor.getString(cursor.getColumnIndexOrThrow(CallLog.Calls.NUMBER));
+                    Log.d("CallLogNumbers", "Number: " + number);
+                }
             }
 
         } catch (SQLException e) {
@@ -325,6 +341,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                     }
                 } while (cursor.moveToNext());
             }
+            cursor.close();
 
             // update LAST CALL
             // get all the call from the last update and find relevant data.
@@ -421,7 +438,6 @@ public class MyContactTable extends SQLiteOpenHelper {
     // this function gets contact map with id and priority, find the last call date and update the table.
     public void updateTableFromMap(Map<Long, MyContact> contactMap) {
         SQLiteDatabase db;
-        Cursor cursor = null;
         NotificationManage notificationManage = NotificationManage.getInstance();
         try {
             db = getWritableDatabase();

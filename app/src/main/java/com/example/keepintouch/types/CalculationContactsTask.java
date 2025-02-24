@@ -10,7 +10,7 @@ import java.lang.ref.WeakReference;
 
 public class CalculationContactsTask extends AsyncTask<MyContactTable,Integer,MyContactTable> {
     private final Context mContext;
-    private WeakReference<MainActivity> activityReference;
+    private final WeakReference<MainActivity> activityReference;
     private AnimationDrawable animationLoading;
     public CalculationContactsTask(MainActivity activity)
     {

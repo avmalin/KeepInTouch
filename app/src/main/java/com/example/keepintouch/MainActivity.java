@@ -28,8 +28,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.example.keepintouch.android.SyncTableBackgroundTask;
 import com.example.keepintouch.android.NotificationManage;
-import com.example.keepintouch.types.CalculationContactsTask;
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
 import com.example.keepintouch.android.WorkManagerHelper;
@@ -80,118 +80,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.contacts_list_view);
         myContactTable = new MyContactTable(this);
 
-        //init for notifications
-        //mNotificationManage = NotificationManage.getInstance();
-        //mNotificationManage.createChannel(this);
-
         //set works to manage notification
         WorkManagerHelper.scheduleDailyWork(this);
-
-
-// test for set notification on header click
-//        TextView tv = findViewById(R.id.tv_header);
-//        tv.setOnClickListener((v -> {
-//            MyContact c = (MyContact) contactsList.getItemAtPosition(0);
-//            mNotificationManage.createNotification(this, c.getContactId(),c.getName(),c.getLastCall(),c.getPriorityType());
-//        }));
-
-
-    }
-
-   
-    public void showMyContactActivity() {
-        contactsList = findViewById(R.id.listView);
-        ArrayList<MyContact> listContact = getMyContactsSort();
-
-
-        //update the contacts
-        adapter = new ArrayAdapter<MyContact>(this,R.layout.contacts_list_item,listContact){
-            @NonNull
-            @Override
-            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                MyContact contact = getItem(position);
-                if (convertView == null) {
-                    convertView = LayoutInflater.from(getContext()).inflate(R.layout.contacts_list_item, parent, false);
-                }
-                //def all the box to view a contact card
-                TextView tvName = convertView.findViewById(R.id.tv_name);
-                TextView tvNumber = convertView.findViewById(R.id.tv_number);
-                ImageView ivView = convertView.findViewById(R.id.iv_image);
-                TextView tvId = convertView.findViewById(R.id.tv_contact_id);
-                TextView tvPriority = convertView.findViewById(R.id.tv_priority);
-                LinearLayout call_layout = convertView.findViewById(R.id.call_layout);
-                ImageView ivWhatsapp = convertView.findViewById(R.id.iv_whatsapp);
-                ImageView ivCall = convertView.findViewById(R.id.iv_call);
-                String photoUri = contact.getPhotoSrc();
-
-                //set days
-                long date  = contact.getLastCall();
-                String lastDate = "";
-                if (date > 0) {
-                   long currentDay = System.currentTimeMillis();
-                   long days = (currentDay - date)/(1000*60*60*24);// 1 day = 24 hours = 24 * 60 * 60 * 1000 milliseconds
-                   lastDate = days + " days";
-                   if(days >  contact.getPriorityType().compValue())
-                       tvNumber.setTextColor(Color.RED);
-                }
-                else if (date==0)//if never called
-                {
-                    lastDate = "∞";
-                    tvNumber.setTextColor(Color.RED);
-                    tvNumber.setTextSize(24);
-                }
-
-                //sets properties
-                tvName.setText(contact.getName());
-                tvNumber.setText(lastDate);
-                if (photoUri != null) {
-                    ivView.setImageURI(Uri.parse(photoUri));
-                }
-                tvId.setText(String.valueOf(contact.getContactId()));
-                tvPriority.setText(contact.getPriorityType().toString());
-
-                //set on click item
-                if (position == selectedItem)
-                    call_layout.setVisibility(View.VISIBLE);
-                else call_layout.setVisibility(View.GONE);
-                convertView.setOnClickListener(v -> {
-                    if(position != selectedItem) {
-                        selectedItem = position;
-                        adapter.notifyDataSetChanged();
-                    }
-                    else{
-                        selectedItem = -1;
-                        adapter.notifyDataSetChanged();
-                    }
-                });
-
-                //set listeners
-                ivCall.setOnClickListener((v -> callingByID(contact.getContactId())));
-                ivWhatsapp.setOnClickListener((v -> sendWhatsAppById(contact.getContactId())));
-                return convertView;
-            }
-        };
-        //contactsList.setOnItemClickListener((parent, view, position, id) -> callingByID(listContact.get(position).getContactId()));
-        contactsList.setAdapter(adapter);
-
-    }
-
-    @NonNull
-    private ArrayList<MyContact> getMyContactsSort() {
-        ArrayList<MyContact> listContact;
-        // Map<Integer,MyContact> contactMap = null;
-
-        listContact = myContactTable.getContactList();
-
-        //sort the contacts.
-        listContact.sort((o1, o2) -> {
-            long o1T,o2T, i;
-            o1T = System.currentTimeMillis() - o1.getLastCall();//calc how match time from last call of o1
-            o2T = System.currentTimeMillis() - o2.getLastCall();//calc how match time from last call of o2
-            i = o2T/o2.getPriorityType().compValue() - o1T/o1.getPriorityType().compValue();//oT div by mount of day according to priority
-            return (int)i;
-        });
-        return listContact;
     }
 
     @Override
@@ -201,8 +91,8 @@ public class MainActivity extends AppCompatActivity {
         {
             showMyContactActivity();
             //init AsyncTask for updating the table
-            CalculationContactsTask asyncTask = new CalculationContactsTask(this);
-            asyncTask.execute(myContactTable);
+            new SyncTableBackgroundTask(this).execute(myContactTable);
+
 
 
         }
@@ -300,6 +190,100 @@ public class MainActivity extends AppCompatActivity {
             if (cursor!=null && !cursor.isClosed())
                 cursor.close();
         }
+    }
+    public void showMyContactActivity() {
+        contactsList = findViewById(R.id.listView);
+        ArrayList<MyContact> listContact = getMyContactsSort();
+
+
+        //update the contacts
+        adapter = new ArrayAdapter<MyContact>(this,R.layout.contacts_list_item,listContact){
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                MyContact contact = getItem(position);
+                if (convertView == null) {
+                    convertView = LayoutInflater.from(getContext()).inflate(R.layout.contacts_list_item, parent, false);
+                }
+                //def all the box to view a contact card
+                TextView tvName = convertView.findViewById(R.id.tv_name);
+                TextView tvNumber = convertView.findViewById(R.id.tv_number);
+                ImageView ivView = convertView.findViewById(R.id.iv_image);
+                TextView tvId = convertView.findViewById(R.id.tv_contact_id);
+                TextView tvPriority = convertView.findViewById(R.id.tv_priority);
+                LinearLayout call_layout = convertView.findViewById(R.id.call_layout);
+                ImageView ivWhatsapp = convertView.findViewById(R.id.iv_whatsapp);
+                ImageView ivCall = convertView.findViewById(R.id.iv_call);
+                String photoUri = contact.getPhotoSrc();
+
+                //set days
+                long date  = contact.getLastCall();
+                String lastDate = "";
+                if (date > 0) {
+                    long currentDay = System.currentTimeMillis();
+                    long days = (currentDay - date)/(1000*60*60*24);// 1 day = 24 hours = 24 * 60 * 60 * 1000 milliseconds
+                    lastDate = days + " days";
+                    if(days >  contact.getPriorityType().compValue())
+                        tvNumber.setTextColor(Color.RED);
+                }
+                else if (date==0)//if never called
+                {
+                    lastDate = "∞";
+                    tvNumber.setTextColor(Color.RED);
+                    tvNumber.setTextSize(24);
+                }
+
+                //sets properties
+                tvName.setText(contact.getName());
+                tvNumber.setText(lastDate);
+                if (photoUri != null) {
+                    ivView.setImageURI(Uri.parse(photoUri));
+                }
+                tvId.setText(String.valueOf(contact.getContactId()));
+                tvPriority.setText(contact.getPriorityType().toString());
+
+                //set on click item
+                if (position == selectedItem)
+                    call_layout.setVisibility(View.VISIBLE);
+                else call_layout.setVisibility(View.GONE);
+                convertView.setOnClickListener(v -> {
+                    if(position != selectedItem) {
+                        selectedItem = position;
+                        adapter.notifyDataSetChanged();
+                    }
+                    else{
+                        selectedItem = -1;
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+
+                //set listeners
+                ivCall.setOnClickListener((v -> callingByID(contact.getContactId())));
+                ivWhatsapp.setOnClickListener((v -> sendWhatsAppById(contact.getContactId())));
+                return convertView;
+            }
+        };
+        //contactsList.setOnItemClickListener((parent, view, position, id) -> callingByID(listContact.get(position).getContactId()));
+        contactsList.setAdapter(adapter);
+
+    }
+
+    @NonNull
+    private ArrayList<MyContact> getMyContactsSort() {
+        ArrayList<MyContact> listContact;
+        // Map<Integer,MyContact> contactMap = null;
+
+        listContact = myContactTable.getContactList();
+
+        //sort the contacts.
+        listContact.sort((o1, o2) -> {
+            long o1T,o2T, i;
+            o1T = System.currentTimeMillis() - o1.getLastCall();//calc how match time from last call of o1
+            o2T = System.currentTimeMillis() - o2.getLastCall();//calc how match time from last call of o2
+            i = o2T/o2.getPriorityType().compValue() - o1T/o1.getPriorityType().compValue();//oT div by mount of day according to priority
+            return (int)i;
+        });
+        return listContact;
     }
 }
 
