@@ -24,7 +24,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         long contactId = intent.getLongExtra("id",-1);
         if (contactId !=-1) {
             MyContactTable myContactTable = new MyContactTable(context);
-            long lastCall = myContactTable.getLastCallById(contactId);
+            long lastCall = 0;//myContactTable.getLastCallById(contactId);
             int priority = intent.getIntExtra("priority", -1);
             if (priority != -1) {
                 long timeToNote = lastCall + (long) priority * 1000 * 60 * 60 * 24; //1 day =  1000 * 60 * 60 * 24

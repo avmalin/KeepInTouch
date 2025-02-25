@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
@@ -57,7 +58,8 @@ public class MyContactTable extends SQLiteOpenHelper {
     private final static String[] FROM_CONTACT_COLUMNS = {
             ContactsContract.Contacts.DISPLAY_NAME,
             ContactsContract.Contacts.PHOTO_URI,
-            ContactsContract.Contacts._ID
+            ContactsContract.Contacts._ID,
+
     };
 
     private static final String[] FROM_COLUMNS_CALL = {CallLog.Calls.NUMBER, CallLog.Calls.DATE};
@@ -196,10 +198,11 @@ public class MyContactTable extends SQLiteOpenHelper {
         return cv;
     }
 
-    public long getLastCallById(long contact_id) {
+    public Long getLastCallById(long contact_id) {
         ContentResolver contentResolver = sContext.getContentResolver();
         Cursor cursor = null;
         long lastCall = 0;
+        String beautifulNumber = "";
         List<String> numbersList = new ArrayList<>();
         try {
                 String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER};
@@ -209,6 +212,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                 cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, selection, selectionArgs, null); // getting all the contact's numbers if(cursor!=null && cursor.moveToFirst())
             {
                 if (cursor != null && cursor.moveToFirst()) {
+                    beautifulNumber = cursor.getString(0);
                     do {
                         numbersList.add(cursor.getString(0));
                     } while (cursor.moveToNext());
@@ -222,9 +226,11 @@ public class MyContactTable extends SQLiteOpenHelper {
                 cursor.close();
         }
         if (!numbersList.isEmpty()) {
-            numbersList = PhoneNumberUtils.generatePhoneVariations(numbersList);
+
             lastCall = getLastCallById(numbersList);
         }
+
+
         return lastCall;
     }
 
@@ -445,6 +451,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                 if (c.getPriorityType() == PriorityType.NEVER) {
                     db.delete(CONTACTS_TABLE_NAME, CONTACT_ID_COL + " = " + c.getContactId(), null);
                 } else {
+
                     c.setLastCall(getLastCallById(c.getContactId()));// update the last Call because of lastUpdate parameter.
                     ContentValues cv = contactToVc(c);
                     cv.put(PRIORITY_TYPE_COL,c.getPriorityType().toString());

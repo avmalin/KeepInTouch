@@ -10,12 +10,7 @@
 
     <!-- Contact Item Container -->
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+
     <LinearLayout
         android:id="@+id/contactItem"
         android:layout_width="match_parent"
@@ -31,7 +26,7 @@
             android:id="@+id/iv_image"
             android:layout_width="65dp"
             android:layout_height="65dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="1dp"
             android:layout_marginEnd="12dp"
             android:contentDescription="@string/profile_photo"
             android:scaleType="centerCrop"
@@ -153,6 +148,6 @@
             android:src="@drawable/baseline_call_24"
             android:layout_marginStart="10dp"/>
     </LinearLayout>
-    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -66,8 +66,8 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     public int getItemCount() {
         return contactList.size();
     }
-    public String getPhoneNumber(int position){
-        return contactList.get(position).getNumber();
+    public Long getContactId(int position){
+        return contactList.get(position).getContactId();
     }
 
     static class ViewHolder  extends RecyclerView.ViewHolder{
@@ -79,7 +79,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
 
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder( View itemView) {
             super(itemView);
             tvNumber = itemView.findViewById(R.id.tv_number);
             tvName = itemView.findViewById(R.id.tv_name);

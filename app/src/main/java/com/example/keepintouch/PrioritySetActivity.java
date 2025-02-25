@@ -22,6 +22,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.keepintouch.types.MyContact;
 import com.example.keepintouch.types.MyContactTable;
@@ -235,7 +236,7 @@ public class PrioritySetActivity extends AppCompatActivity {
 
 
                             if(contact.getPriorityType() == null)//there isn't prev priority (its new)
-                                tvName.setTextColor(getResources().getColor(R.color.colorPrimary));
+                                tvName.setTextColor(ContextCompat.getColor(convertView.getContext(),R.color.colorPrimary));
                             else if (contact.getNumber() == null ||
                                     contact.getPriorityType().idOf() == Integer.decode(contact.getNumber())) // chosen priority equals to prev priority
                                 tvName.setTextColor(Color.GRAY);
