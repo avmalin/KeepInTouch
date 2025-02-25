@@ -283,6 +283,8 @@ public class MyContactTable extends SQLiteOpenHelper {
                     null,
                     null,
                     null);
+            if (cursor ==null)
+                return 0;
             lastNotification = cursor.getLong(0);
 
         } catch (Exception e) {
@@ -298,9 +300,15 @@ public class MyContactTable extends SQLiteOpenHelper {
     public void setLastNotificationById(long contact_id, long lastNotification) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(CONTACT_ID_COL, contact_id);
         cv.put(LAST_TIME_NOTIFICATION_COL, lastNotification);
-        db.insert(NOTIFICATION_TABLE_NAME, null, cv);
+        //THE id is already in the table
+        int result = db.update(NOTIFICATION_TABLE_NAME, cv, CONTACT_ID_COL + " =?" ,new String[]{ String.valueOf(contact_id)});
+        //if not in the table
+        if (result == 0) {
+            cv.put(CONTACT_ID_COL, contact_id);
+            db.insert(NOTIFICATION_TABLE_NAME, null, cv);
+        }
+
     }
 
     //update the last_call column

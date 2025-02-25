@@ -33,6 +33,7 @@ public class DailyWorker extends Worker {
         for (MyContact contact : contactList) {
             if (needsToNotification(contact, myContactTable)) {
                 mNotificationManager.createNotificationFromContact((context), contact);
+                myContactTable.setLastNotificationById(contact.getContactId(), System.currentTimeMillis());
             }
         }
         return Result.success();
