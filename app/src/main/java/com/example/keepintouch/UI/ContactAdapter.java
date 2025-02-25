@@ -82,6 +82,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         ViewHolder( View itemView) {
             super(itemView);
             tvNumber = itemView.findViewById(R.id.tv_number);
+            tvNumber.setVisibility(View.VISIBLE);
             tvName = itemView.findViewById(R.id.tv_name);
             tvPriority = itemView.findViewById(R.id.tv_priority);
         }

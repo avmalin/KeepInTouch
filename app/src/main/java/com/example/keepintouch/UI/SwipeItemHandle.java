@@ -50,9 +50,7 @@ public class SwipeItemHandle extends ItemTouchHelper.SimpleCallback{
             sendWhatsAppById(adapter.getContactId(viewHolder.getLayoutPosition()));
 
         } else if (direction == ItemTouchHelper.LEFT) {
-            Intent intent = new Intent(Intent.ACTION_DIAL);
-            intent.setData(Uri.parse("tel:" + "0521234567")); // החלף למספר הרצוי
-            context.startActivity(intent);
+            sendCallById(adapter.getContactId(viewHolder.getLayoutPosition()));
 
         }
         adapter.notifyItemChanged(viewHolder.getLayoutPosition() );
@@ -88,7 +86,9 @@ public class SwipeItemHandle extends ItemTouchHelper.SimpleCallback{
                 int phoneNumberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
                 String phoneNumber = cursor.getString(phoneNumberIndex);
                 phoneNumber = phoneNumber.replaceAll("[^0-9+]", "");
-                phoneNumber = phoneNumber.replace("+972", "0");
+                if (phoneNumber.startsWith("0")){
+                    phoneNumber = phoneNumber.replaceFirst("0","+972");
+                }
                 String uri = "https://api.whatsapp.com/send?phone=" + phoneNumber;
                 uri += "&text=" +Uri.encode(context.getString(R.string.whatsappMessage));
                 Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -121,19 +121,17 @@ public class SwipeItemHandle extends ItemTouchHelper.SimpleCallback{
             if (cursor != null && cursor.moveToFirst()) {
                 int phoneNumberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
                 String phoneNumber = cursor.getString(phoneNumberIndex);
-                phoneNumber = phoneNumber.replaceAll("[^0-9+]", "");
-                phoneNumber = phoneNumber.replace("+972", "0");
-                String uri = "https://api.whatsapp.com/send?phone=" + phoneNumber;
-                uri += "&text=" +Uri.encode(context.getString(R.string.whatsappMessage));
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(uri));
-                intent.setPackage("com.whatsapp");
-                // Start WhatsApp chat
+//                phoneNumber = phoneNumber.replaceAll("[^0-9+]", "");
+//                phoneNumber = phoneNumber.replace("+972", "0");
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+
+                intent.setData(Uri.parse("tel:" + phoneNumber));
+                context.startActivity(intent);
                 context.startActivity(intent);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Toast toast = Toast.makeText(context, "WhatsApp isn't install", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(context, "Call Error", Toast.LENGTH_SHORT);
             toast.show();
         }
         finally {
