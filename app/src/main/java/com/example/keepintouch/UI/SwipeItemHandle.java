@@ -12,8 +12,8 @@ public class SwipeItemHandle extends ItemTouchHelper.SimpleCallback{
 
     public  SwipeItemHandle(Context context,ContactAdapter adapter){
         super(0,ItemTouchHelper.RIGHT|ItemTouchHelper.LEFT);
-        this.adapter=adapter;
-        this
+        this.adapter = adapter;
+        this.context = context;
     }
     @Override
     public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {

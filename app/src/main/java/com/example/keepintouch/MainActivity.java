@@ -27,7 +27,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.keepintouch.UI.ContactAdapter;
+import com.example.keepintouch.UI.SwipeItemHandle;
 import com.example.keepintouch.android.SyncTableBackgroundTask;
 import com.example.keepintouch.android.NotificationManage;
 import com.example.keepintouch.types.MyContact;
@@ -60,9 +65,9 @@ public class MainActivity extends AppCompatActivity {
             R.id.iv_image,
             R.id.tv_contact_id
         };
-    ListView contactsList;
+    RecyclerView contactsList;
     private SimpleCursorAdapter cursorAdapter;
-    private ArrayAdapter<MyContact> adapter = null;
+    private ContactAdapter contactAdapter = null;
     private MyContactTable myContactTable;
     private Map<Integer,MyContact> contactMap;
     private AnimationDrawable animationLoading;
@@ -79,6 +84,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.contacts_list_view);
         myContactTable = new MyContactTable(this);
+
+        contactsList = findViewById(R.id.listView);
+        contactsList.setLayoutManager(new LinearLayoutManager(this));
+
+
 
         //set works to manage notification
         WorkManagerHelper.scheduleDailyWork(this);
@@ -191,80 +201,18 @@ public class MainActivity extends AppCompatActivity {
                 cursor.close();
         }
     }
+
     public void showMyContactActivity() {
         contactsList = findViewById(R.id.listView);
         ArrayList<MyContact> listContact = getMyContactsSort();
 
 
         //update the contacts
-        adapter = new ArrayAdapter<MyContact>(this,R.layout.contacts_list_item,listContact){
-            @NonNull
-            @Override
-            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                MyContact contact = getItem(position);
-                if (convertView == null) {
-                    convertView = LayoutInflater.from(getContext()).inflate(R.layout.contacts_list_item, parent, false);
-                }
-                //def all the box to view a contact card
-                TextView tvName = convertView.findViewById(R.id.tv_name);
-                TextView tvNumber = convertView.findViewById(R.id.tv_number);
-                ImageView ivView = convertView.findViewById(R.id.iv_image);
-                TextView tvId = convertView.findViewById(R.id.tv_contact_id);
-                TextView tvPriority = convertView.findViewById(R.id.tv_priority);
-                LinearLayout call_layout = convertView.findViewById(R.id.call_layout);
-                ImageView ivWhatsapp = convertView.findViewById(R.id.iv_whatsapp);
-                ImageView ivCall = convertView.findViewById(R.id.iv_call);
-                String photoUri = contact.getPhotoSrc();
+        ContactAdapter contactAdapter = new ContactAdapter(listContact);
+        contactsList.setAdapter(contactAdapter);
 
-                //set days
-                long date  = contact.getLastCall();
-                String lastDate = "";
-                if (date > 0) {
-                    long currentDay = System.currentTimeMillis();
-                    long days = (currentDay - date)/(1000*60*60*24);// 1 day = 24 hours = 24 * 60 * 60 * 1000 milliseconds
-                    lastDate = days + " days";
-                    if(days >  contact.getPriorityType().compValue())
-                        tvNumber.setTextColor(Color.RED);
-                }
-                else if (date==0)//if never called
-                {
-                    lastDate = "∞";
-                    tvNumber.setTextColor(Color.RED);
-                    tvNumber.setTextSize(24);
-                }
-
-                //sets properties
-                tvName.setText(contact.getName());
-                tvNumber.setText(lastDate);
-                if (photoUri != null) {
-                    ivView.setImageURI(Uri.parse(photoUri));
-                }
-                tvId.setText(String.valueOf(contact.getContactId()));
-                tvPriority.setText(contact.getPriorityType().toString());
-
-                //set on click item
-                if (position == selectedItem)
-                    call_layout.setVisibility(View.VISIBLE);
-                else call_layout.setVisibility(View.GONE);
-                convertView.setOnClickListener(v -> {
-                    if(position != selectedItem) {
-                        selectedItem = position;
-                        adapter.notifyDataSetChanged();
-                    }
-                    else{
-                        selectedItem = -1;
-                        adapter.notifyDataSetChanged();
-                    }
-                });
-
-                //set listeners
-                ivCall.setOnClickListener((v -> callingByID(contact.getContactId())));
-                ivWhatsapp.setOnClickListener((v -> sendWhatsAppById(contact.getContactId())));
-                return convertView;
-            }
-        };
-        //contactsList.setOnItemClickListener((parent, view, position, id) -> callingByID(listContact.get(position).getContactId()));
-        contactsList.setAdapter(adapter);
+        ItemTouchHelper itemTouchHelper =  new ItemTouchHelper(new SwipeItemHandle(this,contactAdapter));
+        itemTouchHelper.attachToRecyclerView(contactsList);
 
     }
 
