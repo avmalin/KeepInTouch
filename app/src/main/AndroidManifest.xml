@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.keepintouch">
+    package="com.avmalin.keepintouch">
     <!-- application permissions -->
     <uses-feature
         android:name="android.hardware.telephony"
@@ -20,11 +20,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".RequestPermissionsActivity"
+            android:name="com.avmalin.keepintouch.RequestPermissionsActivity"
             android:exported="false" />
-        <activity android:name=".PrioritySetActivity" />
+        <activity android:name="com.avmalin.keepintouch.PrioritySetActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.avmalin.keepintouch.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,7 +32,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".NotificationReceiver"/>
+        <receiver android:name="com.avmalin.keepintouch.NotificationReceiver"/>
     </application>
 
 </manifest>
