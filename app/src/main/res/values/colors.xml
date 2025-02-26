@@ -4,12 +4,10 @@
     <color name="colorPrimaryDark">#3C853D</color>
     <color name="colorAccent">#75F679</color>
     <color name="person_color">#73DA76</color>
-
-        <color name="black">#000000</color>
-        <color name="white">#FFFFFF</color>
-        <color name="dark_gray">#757575</color>
-        <color name="light_gray">#D3D3D3</color>
-        <color name="primary">#1976D2</color> <!-- Adjust this color as needed -->
-
-
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="dark_gray">#757575</color>
+    <color name="light_gray">#D3D3D3</color>
+    <color name="primary">#1976D2</color>
+    <color name="blue_light">#2196F3</color>
 </resources>
