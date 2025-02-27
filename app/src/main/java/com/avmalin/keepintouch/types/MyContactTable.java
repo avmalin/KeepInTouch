@@ -15,6 +15,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.avmalin.keepintouch.android.NotificationManage;
+import com.avmalin.keepintouch.logic.PhoneNumberUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -224,7 +225,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                 cursor.close();
         }
         if (!numbersList.isEmpty()) {
-
+            numbersList = PhoneNumberUtils.generatePhoneVariations(numbersList);
             lastCall = getLastCallById(numbersList);
         }
 

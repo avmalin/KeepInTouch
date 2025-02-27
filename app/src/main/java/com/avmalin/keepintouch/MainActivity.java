@@ -29,7 +29,6 @@ import com.avmalin.keepintouch.android.NotificationManage;
 import com.avmalin.keepintouch.android.SyncTableBackgroundTask;
 import com.avmalin.keepintouch.android.WorkManagerHelper;
 import com.avmalin.keepintouch.types.MyContactTable;
-import com.avmalin.keepintouch.R;
 import com.avmalin.keepintouch.types.MyContact;
 
 import java.net.URLEncoder;
@@ -58,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
             R.id.iv_image,
             R.id.tv_contact_id
         };
-    RecyclerView contactsList;
+    RecyclerView contactsListView;
     private SimpleCursorAdapter cursorAdapter;
     private ContactAdapter contactAdapter = null;
     private MyContactTable myContactTable;
@@ -78,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.contacts_list_view);
         myContactTable = new MyContactTable(this);
 
-        contactsList = findViewById(R.id.listView);
-        contactsList.setLayoutManager(new LinearLayoutManager(this));
+        contactsListView = findViewById(R.id.listView);
+        contactsListView.setLayoutManager(new LinearLayoutManager(this));
 
 
 
@@ -196,16 +195,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showMyContactActivity() {
-        contactsList = findViewById(R.id.listView);
+        contactsListView = findViewById(R.id.listView);
         ArrayList<MyContact> listContact = getMyContactsSort();
 
 
         //update the contacts
         ContactAdapter contactAdapter = new ContactAdapter(listContact);
-        contactsList.setAdapter(contactAdapter);
+        contactsListView.setAdapter(contactAdapter);
 
         ItemTouchHelper itemTouchHelper =  new ItemTouchHelper(new SwipeItemHandle(this,contactAdapter));
-        itemTouchHelper.attachToRecyclerView(contactsList);
+        itemTouchHelper.attachToRecyclerView(contactsListView);
+
 
     }
 
