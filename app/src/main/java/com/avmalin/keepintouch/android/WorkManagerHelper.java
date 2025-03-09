@@ -26,7 +26,7 @@ public class WorkManagerHelper {
 
         // הגדרת העבודה עם WorkManager
         WorkRequest workRequest = new PeriodicWorkRequest.Builder(DailyWorker.class, 1, TimeUnit.DAYS)
-                .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS) // הפעלה ראשונה בזמן מחושב
+                .setInitialDelay(0, TimeUnit.MILLISECONDS) // הפעלה ראשונה בזמן מחושב
                 .setConstraints(
                         new Constraints.Builder()
                                 .setRequiresBatteryNotLow(true) // רק אם הסוללה לא חלשה

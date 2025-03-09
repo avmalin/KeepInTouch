@@ -80,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
         contactsListView = findViewById(R.id.listView);
         contactsListView.setLayoutManager(new LinearLayoutManager(this));
 
+        mNotificationManage = NotificationManage.getInstance();
+        mNotificationManage.createChannel(this);
 
 
         //set works to manage notification

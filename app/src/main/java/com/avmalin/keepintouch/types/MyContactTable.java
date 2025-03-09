@@ -288,7 +288,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                     null,
                     null,
                     null);
-            if (cursor ==null)
+            if (cursor ==null || !cursor.moveToFirst() )
                 return 0;
             lastNotification = cursor.getLong(0);
 

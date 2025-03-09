@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 
 import androidx.core.app.ActivityCompat;
@@ -39,15 +40,16 @@ public class NotificationManageImp implements NotificationManage {
                 "remainder to keep in touch",
                 NotificationManager.IMPORTANCE_DEFAULT);
         channel.setDescription("channel for remainder to keep in touch your friends");
+
         NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(channel);
     }
 
     public void createNotificationFromContact(Context context, MyContact contact) {
         String text = contact.getName() + " מחכה כבר הרבה זמן לשיחה ממך!";
-        Bitmap bMap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.applogo);
+        Bitmap bMap = BitmapFactory.decodeResource(context.getResources(), R.drawable.applogo_round);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "notifyKeepInTouch")
-                .setSmallIcon(R.mipmap.applogo)
+                .setSmallIcon(R.drawable.applogo_round)
                 .setContentTitle("הרבה זמן לא התקשרת")
                 .setContentText(text)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -58,7 +60,10 @@ public class NotificationManageImp implements NotificationManage {
         builder.setContentIntent(pendingIntent);
         if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
             notificationManager.notify((int) contact.getContactId(), builder.build());
+            Log.d("notification", "notification sent");
+
         }
+        else Log.d("notification", "no permission");
     }
 
     @Override
