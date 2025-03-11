@@ -42,14 +42,13 @@ public class DailyWorker extends Worker {
 
     private boolean needsToNotification(MyContact contact, MyContactTable myContactTable) {
         long lastCall = contact.getLastCall();
-
         int priority = (contact.getPriorityType().compValue());
         long lastNotification = myContactTable.getLastNotificationById(contact.getContactId());
         long timeToNotification = lastCall + ((long) priority * 1000 * 60 * 60 * 24); // 1 day = 24 hours = 24 * 60 * 60 * 1000 milliseconds
         long currentTime = System.currentTimeMillis();
         long timeToNotification2 = lastNotification + (7 * 1000 * 60 * 60 * 24); // 1 day = 24 hours = 24 * 60 * 60 * 1000 milliseconds
-        //return timeToNotification < currentTime && timeToNotification2 <currentTime;
-        return true;
+        return timeToNotification < currentTime && timeToNotification2 <currentTime ;
+
     }
 }
 
