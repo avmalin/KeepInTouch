@@ -17,6 +17,7 @@ import android.util.Log;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.graphics.drawable.IconCompat;
 
 import com.avmalin.keepintouch.MainActivity;
 import com.avmalin.keepintouch.NotificationReceiver;
@@ -49,7 +50,7 @@ public class NotificationManageImp implements NotificationManage {
         String text = contact.getName() + " מחכה כבר הרבה זמן לשיחה ממך!";
         Bitmap bMap = BitmapFactory.decodeResource(context.getResources(), R.drawable.applogo_round);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "notifyKeepInTouch")
-                .setSmallIcon(R.drawable.applogo_round)
+                .setSmallIcon(R.drawable.applogo_bg_removed)
                 .setContentTitle("הרבה זמן לא התקשרת")
                 .setContentText(text)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
