@@ -86,6 +86,12 @@ public class MainActivity extends AppCompatActivity {
 
         //set works to manage notification
         WorkManagerHelper.scheduleDailyWork(this);
+
+        ImageView iv_loading = findViewById(R.id.edit_preference);
+        iv_loading.setOnClickListener(v -> {
+            Intent myIntent = new Intent(MainActivity.this, EditPreference.class);
+            startActivity(myIntent);
+        });
     }
 
     @Override

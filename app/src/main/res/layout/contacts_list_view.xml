@@ -58,6 +58,15 @@
             app:layout_constraintStart_toEndOf="@+id/tv_header"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageButton
+            android:id="@+id/edit_preference"
+            android:layout_width="55dp"
+            android:layout_height="51dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton"
+            app:layout_constraintTop_toTopOf="@+id/iv_loading"
+            app:srcCompat="@drawable/ic_baseline_settings_24" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     ~<androidx.recyclerview.widget.RecyclerView
