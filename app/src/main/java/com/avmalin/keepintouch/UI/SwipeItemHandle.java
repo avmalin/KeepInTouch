@@ -3,6 +3,7 @@ package com.avmalin.keepintouch.UI;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Canvas;
 import android.net.Uri;
@@ -79,7 +80,7 @@ public class SwipeItemHandle extends ItemTouchHelper.SimpleCallback{
                     phoneNumber = phoneNumber.replaceFirst("0","+972");
                 }
                 String uri = "https://api.whatsapp.com/send?phone=" + phoneNumber;
-                uri += "&text=" +Uri.encode(context.getString(R.string.whatsappMessage));
+                uri += "&text=" +Uri.encode(getWhatsappMessage());
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(uri));
                 intent.setPackage("com.whatsapp");
@@ -96,6 +97,12 @@ public class SwipeItemHandle extends ItemTouchHelper.SimpleCallback{
                 cursor.close();
         }
     }
+
+    private String getWhatsappMessage() {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getString(R.string.pref_name), Context.MODE_PRIVATE);
+        return sharedPreferences.getString(context.getString(R.string.key_whatsapp_message),context.getString(R.string.whatsappMessage));
+    }
+
     public void sendCallById(long contact_id) {
 
 

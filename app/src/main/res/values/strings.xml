@@ -27,6 +27,9 @@
     <string name="press_to_add_friends">לחץ על ה \'+\' כדי להוסיף חברים</string>
     <string name="key_whatsapp_message">whatsappMessage</string>
     <string name="pref_name">MyPrefs</string>
+    <string name="settings">settings</string>
+    <string name="edit_preference">edit preference</string>
+    <string name="key_time_to_notification">timeToNotificationKey</string>
 
 
 </resources>

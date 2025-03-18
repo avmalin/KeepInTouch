@@ -10,7 +10,7 @@ public interface NotificationManage {
         return NotificationManageImp.getInstance();
     }
 
-    void createNotification(Context context, long contactId, String contactName, long lastCall, PriorityType pt);
+
 
     void createChannel(Context context);
     void createNotificationFromContact(Context context, MyContact contact);

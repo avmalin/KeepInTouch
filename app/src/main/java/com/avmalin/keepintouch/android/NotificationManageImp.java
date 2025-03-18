@@ -17,10 +17,8 @@ import android.util.Log;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.graphics.drawable.IconCompat;
 
 import com.avmalin.keepintouch.MainActivity;
-import com.avmalin.keepintouch.NotificationReceiver;
 import com.avmalin.keepintouch.R;
 import com.avmalin.keepintouch.types.MyContact;
 import com.avmalin.keepintouch.types.PriorityType;
@@ -67,24 +65,5 @@ public class NotificationManageImp implements NotificationManage {
         else Log.d("notification", "no permission");
     }
 
-    @Override
-    public void createNotification(Context context, long contactId, String contactName, long lastCall, PriorityType pt) {
-        Intent intent = new Intent(context, NotificationReceiver.class);
-        intent.putExtra("id", contactId);
-        intent.putExtra("name", contactName);
-        intent.putExtra("priority", pt.compValue());
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                context,
-                (int) contactId,
-                intent,
-                PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-        long timeToNote = lastCall + (long) pt.compValue() * 1000 * 60 * 60 * 24; //1 day =  1000 * 60 * 60 * 24
-        //timeToNote = System.currentTimeMillis(); // for checks
-        alarmManager.set(
-                AlarmManager.RTC_WAKEUP,
-                timeToNote,
-                pendingIntent);
-    }
 
 }
