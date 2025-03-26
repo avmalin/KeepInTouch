@@ -27,7 +27,7 @@ public class MyContactTable extends SQLiteOpenHelper {
     //database data
 
     private static final String DB_NAME = "my_contacts_db.db";
-    private static final int DB_VERSION = 7;
+    private static final int DB_VERSION = 8;
     public static final String DETAILS_TABLE_NAME = "details_table";
     public static final String TABLE_NAME = "table_name";
     public static final String LAST_UPDATE = "last_update";
@@ -46,6 +46,11 @@ public class MyContactTable extends SQLiteOpenHelper {
     public static final String NOTIFICATION_TABLE_NAME = "notification_table";
     public static final String NOTIFICATION_ID_COL = "notification_id";
     public static final String LAST_TIME_NOTIFICATION_COL = "last_time_notification";
+    public static final String BIRTHDAY_TABLE_NAME = "birthday_table";
+    public static final String BIRTHDAY_ID_COL = "_id";
+    public static final String BIRTHDAY_COL = "birthday";
+    public static final String IS_BIRTHDAY_COL = "is_birthday";
+
 
     private static final String[] FROM_COLUMNS = {
             CONTACT_ID_COL,
@@ -93,8 +98,7 @@ public class MyContactTable extends SQLiteOpenHelper {
         db.execSQL(query);
 
         query = "CREATE TABLE " + CONTACTS_TABLE_NAME + " ("
-                + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + CONTACT_ID_COL + " INTEGER, "
+                + CONTACT_ID_COL + " INTEGER PRIMARY KEY, "
                 + NAME_COL + " TEXT, "
                 + PHONE_COL + " TEXT, "
                 + PHOTO_SRC_COL + " TEXT,  "
@@ -104,8 +108,17 @@ public class MyContactTable extends SQLiteOpenHelper {
 
         query = "CREATE TABLE " + NOTIFICATION_TABLE_NAME + " ("
                 + NOTIFICATION_ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + CONTACT_ID_COL + " INTEGER, "
-                + LAST_TIME_NOTIFICATION_COL + " INTEGER)";
+                + CONTACT_ID_COL + " INTEGER NOT NULL, "
+                + LAST_TIME_NOTIFICATION_COL + " INTEGER,"
+                + "FOREIGN KEY (" + CONTACT_ID_COL + ") REFERENCES " + CONTACTS_TABLE_NAME + "(" + CONTACT_ID_COL + ") ON DELETE CASCADE)";
+        db.execSQL(query);
+
+        query = "CREATE TABLE " + BIRTHDAY_TABLE_NAME + " ("
+                + BIRTHDAY_ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + CONTACT_ID_COL + " INTEGER NOT NULL, "
+                + BIRTHDAY_COL + " INTEGER, "
+                + IS_BIRTHDAY_COL + " INTEGER,"
+                + "FOREIGN KEY (" + CONTACT_ID_COL + ") REFERENCES " + CONTACTS_TABLE_NAME + "(" + CONTACT_ID_COL + ") ON DELETE CASCADE)";
         db.execSQL(query);
         Log.i(null, "DataBase has been created.");
     }
