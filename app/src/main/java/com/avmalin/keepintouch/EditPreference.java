@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -31,8 +32,8 @@ public class EditPreference extends AppCompatActivity {
         tv_whatsappMessage = findViewById(R.id.whatsappMessageTextView);
         tv_timeToNotification = findViewById(R.id.timeToNotificationTextView);
         Button resetButton = findViewById(R.id.resetButton);
-        CardView whatsappMessageCard = findViewById(R.id.whatsappMessageCard);
-        CardView timeToNotificationCard = findViewById(R.id.timeToNotificationCard);
+        LinearLayout whatsappMessageCard = findViewById(R.id.whatsappMessageCard);
+        LinearLayout timeToNotificationCard = findViewById(R.id.timeToNotificationCard);
 
 
         //set the shared preferences
