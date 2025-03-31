@@ -10,4 +10,22 @@
     <color name="light_gray">#D3D3D3</color>
     <color name="primary">#1976D2</color>
     <color name="blue_light">#2196F3</color>
+
+
+<!--    <color name="colorPrimary">#3F51B5</color>-->
+<!--    <color name="colorPrimaryDark">#303F9F</color>-->
+<!--    <color name="colorAccent">#FF4081</color>-->
+
+    <!-- Priority colors -->
+    <color name="priority_high">#E53935</color>
+    <color name="priority_medium">#FB8C00</color>
+    <color name="priority_low">#43A047</color>
+
+    <!-- Card colors -->
+    <color name="card_enabled">#FFFFFF</color>
+    <color name="card_disabled">#F5F5F5</color>
+
+    <!-- Text colors -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
 </resources>
