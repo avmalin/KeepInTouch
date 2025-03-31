@@ -11,6 +11,7 @@ import com.avmalin.keepintouch.types.MyContactTable;
 import com.avmalin.keepintouch.types.MyContact;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DailyWorker extends Worker {
     private MyContactTable myContactTable;
@@ -37,7 +38,19 @@ public class DailyWorker extends Worker {
                 myContactTable.setLastNotificationById(contact.getContactId(), System.currentTimeMillis());
             }
         }
+        //TODO: handle birthday notification
+        List<Long> birthdayListID = myContactTable.getTodayBirthday();
+        for (Long id : birthdayListID) {
+            createBirthdayNotification(myContactTable.getContactById(id));
+        }
+
         return Result.success();
+    }
+
+    private void createBirthdayNotification(MyContact contact) {
+        NotificationManage mNotificationManager = NotificationManage.getInstance();
+        Context context = getApplicationContext();
+        mNotificationManager.createBirthdayNotification((context), contact);
     }
 
     private boolean needsToNotification(MyContact contact, MyContactTable myContactTable) {

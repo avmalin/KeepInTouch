@@ -18,6 +18,7 @@ import java.util.List;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
     private final List<MyContact> contactList;
+    private OnLongClickItem onLongClickItem;
 
     public ContactAdapter(List<MyContact> contactList) {
         this.contactList = contactList;
@@ -59,6 +60,14 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             holder.ivImage.setImageURI(Uri.parse(photoUri));
         }
 
+        //set long click
+        holder.itemView.setOnLongClickListener(v -> {
+            if (onLongClickItem != null) {
+                onLongClickItem.onLongClickItem(position);
+                return true;
+            }
+            return false;
+        });
 
     }
 

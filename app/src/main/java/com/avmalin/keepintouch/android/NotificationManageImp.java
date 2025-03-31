@@ -65,5 +65,26 @@ public class NotificationManageImp implements NotificationManage {
         else Log.d("notification", "no permission");
     }
 
+    @Override
+    public void createBirthdayNotification(Context context, MyContact contact) {
+        String text = "היום יום ההולדת של" + contact.getName() + "!";
+        Bitmap bMap = BitmapFactory.decodeResource(context.getResources(), R.drawable.applogo_round);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "notifyKeepInTouch")
+                .setSmallIcon(R.drawable.applogo_bg_removed)
+                .setContentTitle("מזל טוב!")
+                .setContentText(text)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setLargeIcon(bMap);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        Intent intent1 = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntent =  PendingIntent.getActivity(context,0,intent1,PendingIntent.FLAG_MUTABLE);
+        builder.setContentIntent(pendingIntent);
+        if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            notificationManager.notify((int) contact.getContactId(), builder.build());
+            Log.d("notification", "notification sent");
+
+        }
+        else Log.d("notification", "no permission");
+    }
 
 }

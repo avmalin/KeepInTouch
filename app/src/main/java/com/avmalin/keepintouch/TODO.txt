@@ -1,0 +1,11 @@
+
+
+todo: add birthday notification!
+[X] create table for birthday.
+[X] update birthday every time contact is update
+[X] add birthday notification to daily work
+[ ] add setting for birthday notification to edit preference
+
+todo: add setting for contact by long press on contact
+
+

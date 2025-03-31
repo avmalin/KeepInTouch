@@ -64,6 +64,8 @@ public class EditPreference extends AppCompatActivity {
         loadWhatsappMessage();
         loadTimeToNotification();
 
+        // TODO: handle edit birthday
+
     }
 
     private void showEditDialogWhatsapp() {

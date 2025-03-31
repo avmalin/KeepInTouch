@@ -15,4 +15,5 @@ public interface NotificationManage {
     void createChannel(Context context);
     void createNotificationFromContact(Context context, MyContact contact);
 
+    void createBirthdayNotification(Context context, MyContact contact);
 }

@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.avmalin.keepintouch.UI.ContactAdapter;
+import com.avmalin.keepintouch.UI.OnLongClickItem;
 import com.avmalin.keepintouch.UI.SwipeItemHandle;
 import com.avmalin.keepintouch.android.NotificationManage;
 import com.avmalin.keepintouch.android.SyncTableBackgroundTask;
@@ -35,7 +36,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  implements OnLongClickItem {
     public static final String[] PERMISSIONS= {
             Manifest.permission.READ_CONTACTS,
             Manifest.permission.READ_CALL_LOG,
@@ -233,6 +234,13 @@ public class MainActivity extends AppCompatActivity {
             return (int)i;
         });
         return listContact;
+    }
+
+    @Override
+    public void onLongClickItem(int position) {
+        Intent myIntent = new Intent(MainActivity.this, ContactDetailsActivity.class);
+        myIntent.putExtra("contact_id",contactAdapter.getContactId(position));
+        startActivity(myIntent);
     }
 }
 
