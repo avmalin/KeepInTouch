@@ -129,6 +129,10 @@ public class MyContact {
         return mPriorityType;
     }
 
+    public Long getDays(){
+        return (System.currentTimeMillis() - mLastCall) / (1000*60*60*24) ;// 1 day = 24 hours = 24 * 60 * 60 * 1000 milliseconds
+    }
+
     public void setContactId(int contactId) {
         mContactId = contactId;
     }

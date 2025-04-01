@@ -47,8 +47,8 @@ public class BirthdayContact {
         this.birthday = birthday;
     }
 
-    public int isBirthday() {
-        return isBirthday;
+    public boolean isBirthday() {
+        return isBirthday==1;
     }
 
     public void setBirthday(int birthday) {

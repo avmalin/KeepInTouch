@@ -117,7 +117,7 @@ public class MyContactTable extends SQLiteOpenHelper {
                 + BIRTHDAY_ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + CONTACT_ID_COL + " INTEGER UNIQUE NOT NULL, "
                 + BIRTHDAY_COL + " TEXT, "
-                + IS_BIRTHDAY_COL + " INTEGER,"
+                + IS_BIRTHDAY_COL + " INTEGER DEFAULT 0,"
                 + "FOREIGN KEY (" + CONTACT_ID_COL + ") REFERENCES " + CONTACTS_TABLE_NAME + "(" + CONTACT_ID_COL + ") ON DELETE CASCADE)";
         db.execSQL(query);
         Log.i(null, "DataBase has been created.");
@@ -630,9 +630,10 @@ public class MyContactTable extends SQLiteOpenHelper {
             if (cursor != null && cursor.moveToFirst()) {
                 contact = new MyContact(cursor.getLong(0),
                         PriorityType.valueOf(cursor.getString(1)),
-                        cursor.getString(2),
+                        cursor.getLong(2),
                         cursor.getString(3),
-                        cursor.getString(4));
+                        cursor.getString(4),
+                        cursor.getString(5));
 
             }
 
@@ -679,6 +680,52 @@ public class MyContactTable extends SQLiteOpenHelper {
             }
         }
         return list;
+
+    }
+
+    public BirthdayContact birthdayContactById(long contactID) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = null;
+        BirthdayContact birthdayContact = null;
+        try {
+            cursor = db.query(BIRTHDAY_TABLE_NAME,
+                    new String[]{BIRTHDAY_COL, IS_BIRTHDAY_COL},
+                    CONTACT_ID_COL + " = " + contactID,
+                    null,
+                    null,
+                    null,
+                    null);
+            if (cursor != null && cursor.moveToFirst()) {
+                birthdayContact = new BirthdayContact(contactID, cursor.getString(0), cursor.getInt(1));
+            }
+            else birthdayContact= new BirthdayContact(contactID, null, 0);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+
+        }
+        finally {
+            if (cursor!=null)
+                cursor.close();
+            if (db!=null)
+                db.close();
+        }
+        return birthdayContact;
+    }
+
+    public void setBirthday(BirthdayContact myBirthdayContact) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(CONTACT_ID_COL,myBirthdayContact.getContactId());
+        cv.put(IS_BIRTHDAY_COL,myBirthdayContact.isBirthday());
+        cv.put(BIRTHDAY_COL,myBirthdayContact.getBirthday());
+        //THE id is already in the table
+        int result = db.update(BIRTHDAY_TABLE_NAME, cv, CONTACT_ID_COL + " =?" ,new String[]{ String.valueOf(myBirthdayContact.getContactId())});
+        //if not in the table
+        if (result == 0) {
+            db.insert(BIRTHDAY_TABLE_NAME, null, cv);
+        }
+
 
     }
 }

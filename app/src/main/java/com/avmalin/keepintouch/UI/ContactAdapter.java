@@ -1,5 +1,9 @@
 package com.avmalin.keepintouch.UI;
 
+
+
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -11,6 +15,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.avmalin.keepintouch.ContactDetailsActivity;
+import com.avmalin.keepintouch.MainActivity;
 import com.avmalin.keepintouch.R;
 import com.avmalin.keepintouch.types.MyContact;
 
@@ -18,10 +24,12 @@ import java.util.List;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
     private final List<MyContact> contactList;
-    private OnLongClickItem onLongClickItem;
+    private Context context;
 
-    public ContactAdapter(List<MyContact> contactList) {
+
+    public ContactAdapter(List<MyContact> contactList, Context context) {
         this.contactList = contactList;
+        this.context = context;
     }
 
     @NonNull
@@ -41,8 +49,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         long date  = contact.getLastCall();
         String lastDate = "";
         if (date > 0) {
-            long currentDay = System.currentTimeMillis();
-            long days = (currentDay - date)/(1000*60*60*24);// 1 day = 24 hours = 24 * 60 * 60 * 1000 milliseconds
+            Long days = contact.getDays();
             lastDate = days + " days";
             if(days >  contact.getPriorityType().compValue())
                 holder.tvNumber.setTextColor(Color.RED);
@@ -62,11 +69,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
         //set long click
         holder.itemView.setOnLongClickListener(v -> {
-            if (onLongClickItem != null) {
-                onLongClickItem.onLongClickItem(position);
-                return true;
-            }
-            return false;
+            Intent myIntent = new Intent(context, ContactDetailsActivity.class);
+            myIntent.putExtra("contact_id",contactList.get(position).getContactId());
+            context.startActivity(myIntent);
+            return true;
         });
 
     }

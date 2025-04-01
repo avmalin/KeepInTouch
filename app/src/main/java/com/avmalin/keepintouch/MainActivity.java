@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity  implements OnLongClickItem 
 
 
         //update the contacts
-        ContactAdapter contactAdapter = new ContactAdapter(listContact);
+        ContactAdapter contactAdapter = new ContactAdapter(listContact,this);
         contactsListView.setAdapter(contactAdapter);
 
         ItemTouchHelper itemTouchHelper =  new ItemTouchHelper(new SwipeItemHandle(this,contactAdapter));
