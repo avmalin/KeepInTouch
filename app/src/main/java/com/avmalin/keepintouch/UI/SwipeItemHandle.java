@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.avmalin.keepintouch.R;
+import com.avmalin.keepintouch.types.MyContactTable;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
@@ -105,34 +106,10 @@ public class SwipeItemHandle extends ItemTouchHelper.SimpleCallback{
 
     public void sendCallById(long contact_id) {
 
-
-        Cursor cursor =null;
-        try{
-            ContentResolver contentResolver = context.getContentResolver();
-            String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER};
-            String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? ";
-            String[] selectionArgs = {String.valueOf(contact_id)};
-
-            cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, selection, selectionArgs, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                int phoneNumberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                String phoneNumber = cursor.getString(phoneNumberIndex);
-//                phoneNumber = phoneNumber.replaceAll("[^0-9+]", "");
-//                phoneNumber = phoneNumber.replace("+972", "0");
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-
-                intent.setData(Uri.parse("tel:" + phoneNumber));
-                context.startActivity(intent);
-                context.startActivity(intent);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast toast = Toast.makeText(context, "Call Error", Toast.LENGTH_SHORT);
-            toast.show();
-        }
-        finally {
-            if (cursor!=null && !cursor.isClosed())
-                cursor.close();
-        }
+        MyContactTable myContactTable = new MyContactTable(context);
+        String phoneNumber = myContactTable.getPhoneNumberById(contact_id,context);
+        Intent intent = new Intent(Intent.ACTION_DIAL);
+        intent.setData(Uri.parse("tel:" + phoneNumber));
+        context.startActivity(intent);
     }
 }

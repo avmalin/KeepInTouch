@@ -19,7 +19,7 @@ public class HebrewDateConverter {
         int hebrewMonth = hebrewCalendar.get(Calendar.MONTH) + 1; // החודשים מתחילים מ-0
         int hebrewYear = hebrewCalendar.get(Calendar.YEAR);
 
-        return hebrewDay + " " + getHebrewMonthName(hebrewMonth) + " " + hebrewYear;
+        return getHebrewDayName(hebrewDay) + " " + getHebrewMonthName(hebrewMonth) + " " + hebrewYear;
     }
 
 
@@ -28,5 +28,17 @@ public class HebrewDateConverter {
                 "תשרי", "חשוון", "כסלו", "טבת", "שבט", "אדר א'", "אדר ב'", "ניסן", "אייר", "סיוון", "תמוז", "אב", "אלול"
         };
         return hebrewMonths[month - 1];
+    }
+
+    public static String getHebrewDayName(int number) {
+        String[] hebrewLetters = {
+                "א", "ב", "ג", "ד", "ה", "ו", "ז", "ח", "ט", "י",
+                "יא", "יב", "יג", "יד", "טו", "טז", "יז", "יח", "יט", "כ",
+                "כא", "כב", "כג", "כד", "כה", "כו", "כז", "כח", "כט", "ל"
+        };
+        if (number >= 1 && number <= 30) {
+            return hebrewLetters[number - 1];
+        }
+        return String.valueOf(number);
     }
 }

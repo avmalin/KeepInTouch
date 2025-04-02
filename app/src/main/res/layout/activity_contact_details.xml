@@ -78,10 +78,12 @@
                         android:layout_marginBottom="8dp"
                         android:textSize="24sp"
                         android:textStyle="bold"
+                        android:gravity="right"
                         tools:text="ישראל ישראלי" />
 
                     <TextView
                         android:id="@+id/contact_phone"
+                        android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableStart="@drawable/baseline_call_black_24"
@@ -133,14 +135,15 @@
                         android:id="@+id/priority_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/baseline_low_priority_24"
+                        app:drawableStartCompat="@drawable/baseline_low_priority_24"
                         android:drawablePadding="8dp"
-                        android:gravity="center_vertical"
+                        android:gravity="right"
                         android:paddingTop="8dp"
                         android:paddingBottom="8dp"
                         android:textSize="16sp"
                         tools:text="עדיפות: גבוהה"
-                        tools:textColor="@color/priority_high" />
+                        tools:textColor="@color/priority_high"
+                        />
 
                 </LinearLayout>
 

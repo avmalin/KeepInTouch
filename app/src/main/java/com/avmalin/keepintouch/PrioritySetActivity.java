@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -64,17 +65,29 @@ public class PrioritySetActivity extends AppCompatActivity {
         myContactTable = new MyContactTable(this);
         listContact = myContactTable.getContactList();
         listContact.sort(Comparator.comparing(MyContact::getName));
+        contactPriority = null;
+        contactMap = new HashMap<>();
 
+        initView();
+
+
+        performSearch("");
+    }
+
+    private void initView() {
         //init  element
         ImageView ib_accept = findViewById(R.id.ib_accept);
         ImageView ib_back = findViewById(R.id.ib_back);
         EditText et_search = findViewById(R.id.et_search);
+
         //imp listener
         ib_accept.setOnClickListener(v -> {
             myContactTable.updateTableFromMap(contactMap);
+            Toast.makeText(this, "עודכנו " + contactMap.size() + " אנשי קשר", Toast.LENGTH_SHORT).show();
             finish();
         });
         ib_back.setOnClickListener(v -> finish());
+
         et_search.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -94,17 +107,9 @@ public class PrioritySetActivity extends AppCompatActivity {
             }
         });
 
-
-        //--handle click on listview to view priority options.
-        ListView listView = findViewById(R.id.listViewContacts);
-        //init
-        contactPriority = null;
-        contactMap = new HashMap<>();
-
-        //define on-click item
-
-        performSearch("");
     }
+
+
 
     public void performSearch(String searchString){
         ListView listView = findViewById(R.id.listViewContacts);

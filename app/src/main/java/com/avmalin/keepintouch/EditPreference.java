@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -29,18 +30,32 @@ public class EditPreference extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.acticity_edit_preference);
 
-        tv_whatsappMessage = findViewById(R.id.whatsappMessageTextView);
-        tv_timeToNotification = findViewById(R.id.timeToNotificationTextView);
-        Button resetButton = findViewById(R.id.resetButton);
-        LinearLayout whatsappMessageCard = findViewById(R.id.whatsappMessageCard);
-        LinearLayout timeToNotificationCard = findViewById(R.id.timeToNotificationCard);
-
-
         //set the shared preferences
         sharedPreferences = getSharedPreferences(getString(R.string.pref_name), MODE_PRIVATE);
         //get the default message
         defaultWhatsappMessage = getString(R.string.whatsappMessage);
 
+        initView();
+
+
+
+
+        //set the cards value
+        loadWhatsappMessage();
+        loadTimeToNotification();
+
+        // TODO: handle edit birthday
+
+    }
+
+    private void initView() {
+        tv_whatsappMessage = findViewById(R.id.whatsappMessageTextView);
+        tv_timeToNotification = findViewById(R.id.timeToNotificationTextView);
+
+        Button resetButton = findViewById(R.id.resetButton);
+        LinearLayout whatsappMessageCard = findViewById(R.id.whatsappMessageCard);
+        LinearLayout timeToNotificationCard = findViewById(R.id.timeToNotificationCard);
+        ImageView iv_back = findViewById(R.id.ib_back);
 
         //set listeners
         whatsappMessageCard.setOnClickListener(v ->
@@ -52,20 +67,21 @@ public class EditPreference extends AppCompatActivity {
         });
 
         resetButton.setOnClickListener(v -> {
-            sharedPreferences.edit().putString(getString(R.string.key_whatsapp_message), defaultWhatsappMessage).apply();
-            sharedPreferences.edit().putString(getString(R.string.key_time_to_notification), "12:00").apply();
-            loadWhatsappMessage();
-            loadTimeToNotification();
-            Toast.makeText(EditPreference.this, "הגדרות אופסו", Toast.LENGTH_SHORT).show();
+
+            resetPref();
         });
 
+        iv_back.setOnClickListener((v)->
+                finish());
+    }
 
-        //set the cards value
+    private void resetPref() {
+
+        sharedPreferences.edit().putString(getString(R.string.key_whatsapp_message), defaultWhatsappMessage).apply();
+        sharedPreferences.edit().putString(getString(R.string.key_time_to_notification), "12:00").apply();
         loadWhatsappMessage();
         loadTimeToNotification();
-
-        // TODO: handle edit birthday
-
+        Toast.makeText(EditPreference.this, "הגדרות אופסו", Toast.LENGTH_SHORT).show();
     }
 
     private void showEditDialogWhatsapp() {

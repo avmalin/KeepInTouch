@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ public class RequestPermissionsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_request_permissions_acticity);
         Button button = findViewById(R.id.bt_request);
         button.setOnClickListener(view -> requestRunTimePermission());
+
     }
 
     private void requestRunTimePermission()

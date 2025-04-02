@@ -130,38 +130,10 @@ public class MainActivity extends AppCompatActivity  implements OnLongClickItem 
         return true;
     }
 
-    public void callingByID(long contact_id){
-        Cursor cursor=null;
-        try {
-            ContentResolver contentResolver = this.getContentResolver();
-            String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER};
-            String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? ";
-            String[] selectionArgs = {String.valueOf(contact_id)};
 
-            cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, selection, selectionArgs, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                int phoneNumberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                String phoneNumber = cursor.getString(phoneNumberIndex);
-                cursor.close();
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:" + phoneNumber));
-                startActivity(intent);
-            }
-            else
-                Toast.makeText(getApplicationContext(), "cant find phone number", Toast.LENGTH_SHORT).show();
-
-        }
-        catch (SQLException e) {
-            Log.e("DatabaseError", "Error accessing database searching number", e);
-        }
-        finally {
-            if (cursor!=null && !cursor.isClosed())
-                cursor.close();
-        }
-    }
     public void startLoading(){
         ImageView imageLoading =  findViewById(R.id.iv_loading);
-        imageLoading.setVisibility(View.VISIBLE);
+        //imageLoading.setVisibility(View.VISIBLE);
         animationLoading = (AnimationDrawable) imageLoading.getDrawable();
         animationLoading.start();
     }
@@ -169,38 +141,6 @@ public class MainActivity extends AppCompatActivity  implements OnLongClickItem 
         animationLoading.stop();
         ImageView imageLoading =findViewById(R.id.iv_loading);
         imageLoading.setVisibility(View.INVISIBLE);
-    }
-    public void sendWhatsAppById(long contact_id) {
-
-
-        Cursor cursor =null;
-        try{
-            ContentResolver contentResolver = this.getContentResolver();
-            String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER};
-            String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? ";
-            String[] selectionArgs = {String.valueOf(contact_id)};
-
-            cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, selection, selectionArgs, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                int phoneNumberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                String phoneNumber = cursor.getString(phoneNumberIndex);
-                String uri = "https://api.whatsapp.com/send?phone=" + phoneNumber;
-                uri += "&text=" + URLEncoder.encode(getString(R.string.whatsappMessage), "UTF-8");
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(uri));
-                intent.setPackage("com.whatsapp");
-                // Start WhatsApp chat
-                startActivity(intent);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast toast = Toast.makeText(getApplicationContext(), "WhatsApp isn't install", Toast.LENGTH_SHORT);
-            toast.show();
-        }
-        finally {
-            if (cursor!=null && !cursor.isClosed())
-                cursor.close();
-        }
     }
 
     public void showMyContactActivity() {

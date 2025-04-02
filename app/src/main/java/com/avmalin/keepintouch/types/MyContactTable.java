@@ -3,6 +3,7 @@ package com.avmalin.keepintouch.types;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -590,7 +592,7 @@ public class MyContactTable extends SQLiteOpenHelper {
             db = this.getReadableDatabase();
             cursor = db.query(BIRTHDAY_TABLE_NAME,
                     new String[]{CONTACT_ID_COL, IS_BIRTHDAY_COL},
-                    BIRTHDAY_COL + " = DATE('now')",
+                    "strftime('%m %d', " + BIRTHDAY_COL + ") = strftime('%m %d','now')",
                     null,
                     null,
                     null,
@@ -727,5 +729,34 @@ public class MyContactTable extends SQLiteOpenHelper {
         }
 
 
+    }
+
+    public  String getPhoneNumberById(long contact_id, Context context){
+        Cursor cursor =null;
+        String phoneNumber="";
+        try{
+            ContentResolver contentResolver = context.getContentResolver();
+            String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER};
+            String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? ";
+            String[] selectionArgs = {String.valueOf(contact_id)};
+
+            cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                int phoneNumberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                phoneNumber = cursor.getString(phoneNumberIndex);
+//                phoneNumber = phoneNumber.replaceAll("[^0-9+]", "");
+//                phoneNumber = phoneNumber.replace("+972", "0");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast toast = Toast.makeText(context, "Call Error", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        finally {
+            if (cursor!=null && !cursor.isClosed())
+                cursor.close();
+
+        }
+        return phoneNumber;
     }
 }
