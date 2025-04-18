@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,8 +64,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         holder.tvNumber.setText(lastDate);
         //set the image
         String photoUri = contact.getPhotoSrc();
-        if (photoUri != null) {
+        if (photoUri != null ) {
+            Log.d("photoUri", contact.getName());
             holder.ivImage.setImageURI(Uri.parse(photoUri));
+            Log.d("photoUri", "seccess");
         }
 
         //set long click
@@ -100,6 +103,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             tvNumber.setVisibility(View.VISIBLE);
             tvName = itemView.findViewById(R.id.tv_name);
             tvPriority = itemView.findViewById(R.id.tv_priority);
+            ivImage = itemView.findViewById(R.id.iv_image);
         }
     }
 }
