@@ -31,6 +31,7 @@ public class RequestPermissionsActivity extends AppCompatActivity {
     {
         if(!hasPermissions(MainActivity.PERMISSIONS))
         {
+
             if(ActivityCompat.shouldShowRequestPermissionRationale(this, MainActivity.PERMISSIONS[0])||
                     ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[1]) ||
                     ActivityCompat.shouldShowRequestPermissionRationale(this,MainActivity.PERMISSIONS[2]) ||
